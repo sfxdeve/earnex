@@ -1,39 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "../index.css";
-import Header from "@/components/header";
+import type { PropsWithChildren } from "react";
 import Providers from "@/components/providers";
-
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
+import { sora } from "@/lib/font";
+import "../index.css";
 
 export const metadata: Metadata = {
-	title: "earnex",
-	description: "earnex",
+	title: "Earnex",
+	description: "Earnex",
 };
 
-export default function RootLayout({
-	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
+			<body className={`${sora.variable} antialiased`}>
 				<Providers>
-					<div className="grid h-svh grid-rows-[auto_1fr]">
-						<Header />
-						{children}
-					</div>
+					<div className="grid h-svh grid-rows-[auto_1fr]">{children}</div>
 				</Providers>
 			</body>
 		</html>
