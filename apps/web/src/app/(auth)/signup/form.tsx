@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
+import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export function SignUpForm() {
@@ -25,6 +26,7 @@ export function SignUpForm() {
 					name: "",
 					email: value.email,
 					password: value.password,
+					callbackURL: routes.dashboard.root(),
 				},
 				{
 					onSuccess: () => {
