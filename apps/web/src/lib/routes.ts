@@ -3,4 +3,7 @@ export const routes = {
 		signUp: () => "/signup",
 		signIn: () => "/signin",
 	},
+	dashboard: {
+		root: () => "/dashboard",
+	},
 };
