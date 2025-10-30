@@ -1,5 +1,5 @@
 {
-	"name": "@earnex/auth",
+	"name": "@earnex/nodemailer",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -15,16 +15,13 @@
 		"build": "tsdown"
 	},
 	"devDependencies": {
+		"@types/nodemailer": "^7.0.3",
 		"tsdown": "catalog:"
 	},
 	"peerDependencies": {
 		"typescript": "^5"
 	},
 	"dependencies": {
-		"better-auth": "catalog:",
-		"dotenv": "catalog:",
-		"zod": "catalog:",
-		"@earnex/db": "workspace:*",
-		"@earnex/nodemailer": "workspace:*"
+		"nodemailer": "^7.0.10"
 	}
 }

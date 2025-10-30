@@ -28,7 +28,9 @@ export function SignUpForm() {
 				},
 				{
 					onSuccess: () => {
-						// router.push("/dashboard");
+						toast.success(
+							"Account created! Please check your email to verify your email.",
+						);
 					},
 					onError: (error) => {
 						toast.error(error.error.message || error.error.statusText);
@@ -71,7 +73,7 @@ export function SignUpForm() {
 								type="email"
 								placeholder="Your email address"
 								className={cn(
-									"rounded-none border-0 border-b px-0 py-6 placeholder:text-lg focus-visible:ring-0",
+									"rounded-none border-0 border-b px-2 py-6 placeholder:text-lg focus-visible:ring-0",
 								)}
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -100,7 +102,7 @@ export function SignUpForm() {
 								type="password"
 								placeholder="Client portal password"
 								className={cn(
-									"rounded-none border-0 border-b px-0 py-6 placeholder:text-lg focus-visible:ring-0",
+									"rounded-none border-0 border-b px-2 py-6 placeholder:text-lg focus-visible:ring-0",
 								)}
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -129,7 +131,7 @@ export function SignUpForm() {
 								type="text"
 								placeholder="Where do you live"
 								className={cn(
-									"rounded-none border-0 border-b px-0 py-6 placeholder:text-lg focus-visible:ring-0",
+									"rounded-none border-0 border-b px-2 py-6 placeholder:text-lg focus-visible:ring-0",
 								)}
 								value={field.state.value}
 								onBlur={field.handleBlur}
