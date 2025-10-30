@@ -3,11 +3,12 @@ import Link from "next/link";
 import { assets } from "@/assets";
 import { cn } from "@/lib/utils";
 import { content } from "./content";
+import { SignUpForm } from "./form";
 
 export default function SignUpPage() {
 	return (
 		<main>
-			<section className={cn("relative flex min-h-[95vh] flex-col p-24")}>
+			<section className={cn("relative flex min-h-screen flex-col p-24")}>
 				<Image
 					src={assets.pattern.src}
 					alt={assets.pattern.alt}
@@ -15,7 +16,9 @@ export default function SignUpPage() {
 						"-z-50 absolute inset-0 size-full rotate-180 object-fill",
 					)}
 				/>
+
 				<div className={cn("container mx-auto flex flex-1")}>
+					{/* Left Section */}
 					<div className={cn("flex flex-1 flex-col justify-between gap-6")}>
 						{/* Brand */}
 						<div>
@@ -34,7 +37,12 @@ export default function SignUpPage() {
 							{/* Auth Link */}
 							<p className={cn("text-2xl")}>
 								{content.auth.question}{" "}
-								<Link href={content.auth.linkUrl}>{content.auth.linkText}</Link>
+								<Link
+									href={content.auth.linkUrl}
+									className="font-semibold underline"
+								>
+									{content.auth.linkText}
+								</Link>
 							</p>
 						</div>
 
@@ -44,7 +52,25 @@ export default function SignUpPage() {
 						</div>
 					</div>
 
-					<div className={cn("flex-1")} />
+					{/* Right Section */}
+					<div className={cn("flex flex-1 flex-col justify-between gap-6")}>
+						<div className={cn("space-y-4")}>
+							<h3 className={cn("font-bold text-xl tracking-wide")}>
+								{content.form.heading}
+							</h3>
+							<h4 className={cn("text-4xl tracking-wider")}>
+								{content.form.subheading}
+							</h4>
+						</div>
+
+						{/* Sign Up Form */}
+						<SignUpForm />
+
+						{/* Info Text */}
+						<div className={cn("space-y-4")}>
+							<p className={cn("leading-7")}>{content.form.note}</p>
+						</div>
+					</div>
 				</div>
 			</section>
 		</main>
