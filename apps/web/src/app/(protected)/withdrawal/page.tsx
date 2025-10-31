@@ -2,6 +2,7 @@
 
 import { assets } from "@/assets";
 import { Button } from "@/components/ui/button";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
@@ -26,8 +27,33 @@ export default function WithdrawalPage() {
 				</div>
 				<Separator className={cn("mt-3 mb-6")} />
 				<div className={cn("space-y-8")}>
-					<h3 className={cn("text-sm")}>My saved methods</h3>
-					<h3 className={cn("text-sm")}>All payment methods</h3>
+					<div className={cn("space-y-2")}>
+						<h3 className={cn("font-bold text-sm")}>Bank card refunds</h3>
+						<p className={cn("text-gray-300 text-xs")}>
+							You must withdraw the initial amount you deposited via your bank
+							cards first. You will then be able to access different withdrawal
+							options.
+						</p>
+					</div>
+					<div className={cn("grid grid-cols-3 gap-6 lg:grid-cols-4")}>
+						<Card className={cn("gap-4 border-primary bg-primary")}>
+							<CardHeader>
+								<CardTitle>
+									<span className={cn("font-bold text-5xl")}>110</span>
+									<span className={cn("text-xl")}>.00 USD</span>
+								</CardTitle>
+							</CardHeader>
+							<Separator />
+							<CardFooter
+								className={cn("flex-col items-stretch gap-2 text-xs")}
+							>
+								<p>Bank card refund</p>
+								<p>524**********1</p>
+							</CardFooter>
+						</Card>
+					</div>
+					<h3 className={cn("font-bold text-sm")}>My saved methods</h3>
+					<h3 className={cn("font-bold text-sm")}>All payment methods</h3>
 					<div className={cn("grid grid-cols-3 gap-6 lg:grid-cols-4")}>
 						<MethodCard
 							name="BinancePay"
