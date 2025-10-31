@@ -3,10 +3,10 @@
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loader";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ export function SignUpForm() {
 					name: "",
 					email: value.email,
 					password: value.password,
-					callbackURL: routes.dashboard.root,
+					callbackURL: routes.protected.dashboard,
 				},
 				{
 					onSuccess: () => {

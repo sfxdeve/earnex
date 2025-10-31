@@ -3,7 +3,10 @@ export const routes = {
 		signUp: "/signup" as const,
 		signIn: "/signin" as const,
 	},
-	dashboard: {
-		root: "/dashboard" as const,
+	protected: {
+		dashboard: "/dashboard" as const,
+		deposit: "/deposit" as const,
+		withdrawal: "/withdrawal" as const,
+		analytics: "/analytics" as const,
 	},
 };

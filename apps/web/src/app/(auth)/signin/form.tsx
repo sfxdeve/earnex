@@ -4,10 +4,10 @@ import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loader";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ export function SignInForm() {
 				},
 				{
 					onSuccess: () => {
-						router.push(routes.dashboard.root);
+						router.push(routes.protected.dashboard);
 					},
 					onError: (error) => {
 						toast.error(error.error.message || error.error.statusText);
