@@ -7,6 +7,7 @@ export const routes = {
 		dashboard: "/dashboard" as const,
 		deposit: "/deposit" as const,
 		withdrawal: "/withdrawal" as const,
+		trade: "/trade" as const,
 		analytics: "/analytics" as const,
 	},
 };
