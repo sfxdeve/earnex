@@ -5,10 +5,10 @@ import { Header } from "./_components/header";
 export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
 	return (
 		<main>
-			<section
-				className={cn("relative flex min-h-[85dvh] flex-col px-24 py-12")}
-			>
-				<div className={cn("container mx-auto flex-1")}>
+			<section className={cn("relative flex min-h-dvh flex-col px-24 py-12")}>
+				<div
+					className={cn("container mx-auto flex flex-1 flex-col space-y-16")}
+				>
 					<Header />
 					{children}
 				</div>

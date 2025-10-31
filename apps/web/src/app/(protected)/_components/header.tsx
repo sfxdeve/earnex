@@ -12,7 +12,7 @@ export function Header() {
 	return (
 		<header className={cn("flex items-center justify-between gap-6")}>
 			<nav className={cn("flex items-center gap-20")}>
-				<h1 className={cn("font-bold text-3xl")}>Earnex Global</h1>
+				<h1 className={cn("font-bold text-2xl")}>Earnex Global</h1>
 				<ul className={cn("flex gap-10")}>
 					<li
 						className={cn(
