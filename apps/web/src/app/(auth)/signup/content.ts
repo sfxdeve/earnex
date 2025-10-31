@@ -11,7 +11,7 @@ export const content = {
 	auth: {
 		question: "Already have an account?",
 		linkText: "Login",
-		linkUrl: routes.auth.signIn(),
+		linkUrl: routes.auth.signIn,
 	},
 
 	form: {

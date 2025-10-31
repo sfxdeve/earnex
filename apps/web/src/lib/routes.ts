@@ -1,9 +1,9 @@
 export const routes = {
 	auth: {
-		signUp: () => "/signup",
-		signIn: () => "/signin",
+		signUp: "/signup" as const,
+		signIn: "/signin" as const,
 	},
 	dashboard: {
-		root: () => "/dashboard",
+		root: "/dashboard" as const,
 	},
 };

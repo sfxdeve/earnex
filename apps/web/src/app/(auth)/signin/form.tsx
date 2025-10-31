@@ -30,7 +30,7 @@ export function SignInForm() {
 				},
 				{
 					onSuccess: () => {
-						router.push(routes.dashboard.root());
+						router.push(routes.dashboard.root);
 					},
 					onError: (error) => {
 						toast.error(error.error.message || error.error.statusText);

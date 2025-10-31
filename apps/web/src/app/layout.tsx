@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
-import Providers from "@/components/providers";
+import { Providers } from "@/components/providers";
 import { sora } from "@/lib/font";
 import "../index.css";
 

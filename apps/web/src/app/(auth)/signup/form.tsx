@@ -26,7 +26,7 @@ export function SignUpForm() {
 					name: "",
 					email: value.email,
 					password: value.password,
-					callbackURL: routes.dashboard.root(),
+					callbackURL: routes.dashboard.root,
 				},
 				{
 					onSuccess: () => {
