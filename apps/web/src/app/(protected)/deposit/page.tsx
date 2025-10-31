@@ -37,59 +37,59 @@ export default function DepositPage() {
 							}}
 						/>
 						<MethodCard
-							name="BinancePay"
+							name="Bank Card"
 							icon={{
-								src: assets.binancePayIcon.src,
-								alt: assets.binancePayIcon.alt,
+								src: assets.bankCardIcon.src,
+								alt: assets.bankCardIcon.alt,
 							}}
 						/>
 						<MethodCard
-							name="BinancePay"
+							name="Skrill"
 							icon={{
-								src: assets.binancePayIcon.src,
-								alt: assets.binancePayIcon.alt,
+								src: assets.skrillIcon.src,
+								alt: assets.skrillIcon.alt,
 							}}
 						/>
 						<MethodCard
-							name="BinancePay"
+							name="Bitcoin BTC"
 							icon={{
-								src: assets.binancePayIcon.src,
-								alt: assets.binancePayIcon.alt,
+								src: assets.bitcoinBTCIcon.src,
+								alt: assets.bitcoinBTCIcon.alt,
 							}}
 						/>
 						<MethodCard
-							name="BinancePay"
+							name="SticPay"
 							icon={{
-								src: assets.binancePayIcon.src,
-								alt: assets.binancePayIcon.alt,
+								src: assets.sticPayIcon.src,
+								alt: assets.sticPayIcon.alt,
 							}}
 						/>
 						<MethodCard
-							name="BinancePay"
+							name="USD Coin USDC (ERC20)"
 							icon={{
-								src: assets.binancePayIcon.src,
-								alt: assets.binancePayIcon.alt,
+								src: assets.usdCoinIcon.src,
+								alt: assets.usdCoinIcon.alt,
 							}}
 						/>
 						<MethodCard
-							name="BinancePay"
+							name="Neteller"
 							icon={{
-								src: assets.binancePayIcon.src,
-								alt: assets.binancePayIcon.alt,
+								src: assets.netellerIcon.src,
+								alt: assets.netellerIcon.alt,
 							}}
 						/>
 						<MethodCard
-							name="BinancePay"
+							name="Perfect Money"
 							icon={{
-								src: assets.binancePayIcon.src,
-								alt: assets.binancePayIcon.alt,
+								src: assets.perfectMoneyIcon.src,
+								alt: assets.perfectMoneyIcon.alt,
 							}}
 						/>
 						<MethodCard
-							name="BinancePay"
+							name="Tether (USDT ERC20)"
 							icon={{
-								src: assets.binancePayIcon.src,
-								alt: assets.binancePayIcon.alt,
+								src: assets.tetherIcon.src,
+								alt: assets.tetherIcon.alt,
 							}}
 						/>
 					</div>
