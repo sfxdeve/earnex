@@ -22,15 +22,16 @@
 		"typescript": "^5"
 	},
 	"dependencies": {
-		"@orpc/server": "catalog:",
+		"@earnex/auth": "workspace:*",
+		"@earnex/db": "workspace:*",
 		"@orpc/client": "catalog:",
 		"@orpc/openapi": "catalog:",
+		"@orpc/server": "catalog:",
 		"@orpc/zod": "catalog:",
-		"better-auth": "catalog:",
 		"@prisma/client": "catalog:",
+		"better-auth": "catalog:",
 		"dotenv": "catalog:",
-		"zod": "catalog:",
-		"@earnex/auth": "workspace:*",
-		"@earnex/db": "workspace:*"
+		"stripe": "^19.2.0",
+		"zod": "catalog:"
 	}
 }
