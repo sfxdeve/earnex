@@ -34,8 +34,8 @@ export function SignUpForm() {
 							"Account created! Please check your email to verify your email.",
 						);
 					},
-					onError: (error) => {
-						toast.error(error.error.message || error.error.statusText);
+					onError: (ctx) => {
+						toast.error(ctx.error.message || ctx.error.statusText);
 					},
 				},
 			);

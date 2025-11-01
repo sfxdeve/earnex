@@ -32,8 +32,12 @@ export function SignInForm() {
 					onSuccess: () => {
 						router.push(routes.protected.dashboard);
 					},
-					onError: (error) => {
-						toast.error(error.error.message || error.error.statusText);
+					onError: (ctx) => {
+						if (ctx.error.status === 403) {
+							toast.error("Invalid email or password");
+						}
+
+						toast.error(ctx.error.message || ctx.error.statusText);
 					},
 				},
 			);
