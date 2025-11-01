@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { NativeButton } from "@/components/ui/native-button";
 import {
 	Card,
 	CardAction,
@@ -24,10 +23,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
+import { NativeButton } from "@/components/ui/native-button";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
-import { cn } from "@/lib/utils";
+import { cn, formatAmount } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 
 export default function AdminPage() {
@@ -572,7 +572,7 @@ export default function AdminPage() {
 																		Balance
 																	</span>
 																	<span className={cn("font-semibold")}>
-																		${account.balance || 0}
+																		${formatAmount(account.balance)}
 																	</span>
 																</div>
 																<div
@@ -584,7 +584,7 @@ export default function AdminPage() {
 																		Total
 																	</span>
 																	<span className={cn("font-semibold")}>
-																		${account.total || 0}
+																		${formatAmount(account.total)}
 																	</span>
 																</div>
 															</div>

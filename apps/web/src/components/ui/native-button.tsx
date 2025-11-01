@@ -56,7 +56,4 @@ function NativeButton({
 	);
 }
 
-export {
-	NativeButton,
-	nativeNativeButtonVariants as nativeNativeButtonVariants,
-};
+export { NativeButton, nativeNativeButtonVariants };

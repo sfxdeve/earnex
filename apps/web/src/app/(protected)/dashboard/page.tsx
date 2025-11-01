@@ -6,10 +6,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import {
-	NativeButton,
-	nativeNativeButtonVariants,
-} from "@/components/ui/native-button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
@@ -22,6 +18,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import {
+	NativeButton,
+	nativeNativeButtonVariants,
+} from "@/components/ui/native-button";
+import {
 	Select,
 	SelectContent,
 	SelectGroup,
@@ -33,7 +33,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
-import { cn } from "@/lib/utils";
+import { cn, formatAmount } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 
 export default function DashboardPage() {
@@ -271,7 +271,7 @@ export default function DashboardPage() {
 														"font-bold text-3xl sm:text-4xl lg:text-5xl",
 													)}
 												>
-													{selectedAccount.balance || 0}
+													{formatAmount(selectedAccount.balance)}
 												</span>
 												<span className={cn("text-lg sm:text-xl")}> USD</span>
 											</p>
@@ -365,7 +365,8 @@ export default function DashboardPage() {
 											<p className={cn("space-x-2")}>
 												<span className={cn("text-gray-400")}>Amount</span>
 												<span className={cn("font-semibold")}>
-													${transaction.amount} {transaction.currency}
+													${formatAmount(transaction.amount)}{" "}
+													{transaction.currency}
 												</span>
 											</p>
 											<p className={cn("space-x-2")}>
@@ -419,7 +420,7 @@ export default function DashboardPage() {
 											<p className={cn("space-x-2")}>
 												<span className={cn("text-gray-400")}>Amount</span>
 												<span className={cn("font-semibold")}>
-													${investment.amount}
+													${formatAmount(investment.amount)}
 												</span>
 											</p>
 											<p className={cn("space-x-2")}>

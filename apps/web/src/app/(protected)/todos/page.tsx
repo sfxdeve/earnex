@@ -3,7 +3,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { NativeButton } from "@/components/ui/native-button";
 import {
 	Card,
 	CardContent,
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { NativeButton } from "@/components/ui/native-button";
 import { orpc } from "@/utils/orpc";
 
 export default function TodosPage() {

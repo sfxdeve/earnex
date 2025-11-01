@@ -6,7 +6,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { assets } from "@/assets";
-import { NativeButton } from "@/components/ui/native-button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
@@ -18,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
+import { NativeButton } from "@/components/ui/native-button";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";

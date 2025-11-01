@@ -4,7 +4,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { NativeButton } from "@/components/ui/native-button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
@@ -16,10 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
+import { NativeButton } from "@/components/ui/native-button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
+import { cn, formatAmount } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 
 export default function AdminTransactionsPage() {
@@ -183,13 +183,13 @@ export default function AdminTransactionsPage() {
 									<div>
 										<span className={cn("text-gray-400")}>Balance:</span>
 										<span className={cn("ml-2 font-semibold")}>
-											${selectedAccount.balance || 0}
+											${formatAmount(selectedAccount.balance)}
 										</span>
 									</div>
 									<div>
 										<span className={cn("text-gray-400")}>Total:</span>
 										<span className={cn("ml-2 font-semibold")}>
-											${selectedAccount.total || 0}
+											${formatAmount(selectedAccount.total)}
 										</span>
 									</div>
 									<div className={cn("col-span-2")}>
@@ -471,7 +471,8 @@ export default function AdminTransactionsPage() {
 													<p className={cn("space-x-2")}>
 														<span className={cn("text-gray-400")}>Amount</span>
 														<span className={cn("font-semibold")}>
-															${transaction.amount} {transaction.currency}
+															${formatAmount(transaction.amount)}{" "}
+															{transaction.currency}
 														</span>
 													</p>
 													<p className={cn("space-x-2")}>
@@ -525,7 +526,7 @@ export default function AdminTransactionsPage() {
 													<p className={cn("space-x-2")}>
 														<span className={cn("text-gray-400")}>Amount</span>
 														<span className={cn("font-semibold")}>
-															${investment.amount}
+															${formatAmount(investment.amount)}
 														</span>
 													</p>
 													<p className={cn("space-x-2")}>
