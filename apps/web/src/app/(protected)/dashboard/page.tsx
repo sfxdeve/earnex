@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -26,6 +27,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -48,7 +50,20 @@ export default function DashboardPage() {
 		}),
 	);
 
-	// Set initial selected account to first account
+	const { data: transactionsData, isLoading: transactionsLoading } = useQuery(
+		orpc.bank.getTransactions.queryOptions({
+			input: { accountId: selectedAccountId },
+			enabled: !!selectedAccountId,
+		}),
+	);
+
+	const { data: investmentsData, isLoading: investmentsLoading } = useQuery(
+		orpc.bank.getInvestments.queryOptions({
+			input: { accountId: selectedAccountId },
+			enabled: !!selectedAccountId,
+		}),
+	);
+
 	useEffect(() => {
 		if (
 			bankData?.accounts &&
@@ -307,6 +322,124 @@ export default function DashboardPage() {
 					</nav>
 				</div>
 			</div>
+
+			{selectedAccountId && (
+				<Tabs defaultValue="transactions" className={cn("w-full flex-1")}>
+					<TabsList>
+						<TabsTrigger value="transactions">Transactions</TabsTrigger>
+						<TabsTrigger value="investments">Investments</TabsTrigger>
+					</TabsList>
+
+					<TabsContent value="transactions" className={cn("mt-4")}>
+						{transactionsLoading ? (
+							<div className={cn("flex justify-center py-8")}>
+								<Loader />
+							</div>
+						) : transactionsData?.transactions.length === 0 ? (
+							<p className={cn("text-muted-foreground text-sm")}>
+								No transactions found
+							</p>
+						) : (
+							<div
+								className={cn(
+									"grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3",
+								)}
+							>
+								{transactionsData?.transactions.map((transaction) => (
+									<Card
+										key={transaction.id}
+										className={cn("gap-4 border-primary bg-transparent")}
+									>
+										<CardHeader>
+											<CardTitle className={cn("text-lg")}>
+												{transaction.type}
+											</CardTitle>
+										</CardHeader>
+										<Separator />
+										<CardFooter
+											className={cn("flex-col items-stretch gap-2 text-xs")}
+										>
+											<p className={cn("space-x-2")}>
+												<span className={cn("text-gray-400")}>Amount</span>
+												<span className={cn("font-semibold")}>
+													${transaction.amount} {transaction.currency}
+												</span>
+											</p>
+											<p className={cn("space-x-2")}>
+												<span className={cn("text-gray-400")}>Status</span>
+												<span className={cn("uppercase")}>
+													{transaction.status}
+												</span>
+											</p>
+											<p className={cn("space-x-2")}>
+												<span className={cn("text-gray-400")}>Date</span>
+												<span>
+													{new Date(transaction.createdAt).toLocaleString()}
+												</span>
+											</p>
+										</CardFooter>
+									</Card>
+								))}
+							</div>
+						)}
+					</TabsContent>
+
+					<TabsContent value="investments" className={cn("mt-4")}>
+						{investmentsLoading ? (
+							<div className={cn("flex justify-center py-8")}>
+								<Loader />
+							</div>
+						) : investmentsData?.investments.length === 0 ? (
+							<p className={cn("text-muted-foreground text-sm")}>
+								No investments found
+							</p>
+						) : (
+							<div
+								className={cn(
+									"grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3",
+								)}
+							>
+								{investmentsData?.investments.map((investment) => (
+									<Card
+										key={investment.id}
+										className={cn("gap-4 border-primary bg-transparent")}
+									>
+										<CardHeader>
+											<CardTitle className={cn("text-lg")}>
+												{investment.name}
+											</CardTitle>
+										</CardHeader>
+										<Separator />
+										<CardFooter
+											className={cn("flex-col items-stretch gap-2 text-xs")}
+										>
+											<p className={cn("space-x-2")}>
+												<span className={cn("text-gray-400")}>Amount</span>
+												<span className={cn("font-semibold")}>
+													${investment.amount}
+												</span>
+											</p>
+											<p className={cn("space-x-2")}>
+												<span className={cn("text-gray-400")}>Status</span>
+												<span className={cn("uppercase")}>
+													{investment.status}
+												</span>
+											</p>
+											<p className={cn("space-x-2")}>
+												<span className={cn("text-gray-400")}>Date</span>
+												<span>
+													{new Date(investment.createdAt).toLocaleString()}
+												</span>
+											</p>
+										</CardFooter>
+									</Card>
+								))}
+							</div>
+						)}
+					</TabsContent>
+				</Tabs>
+			)}
+
 			<div
 				className={cn(
 					"mt-8 text-left text-gray-400 text-sm sm:ml-auto sm:text-right",

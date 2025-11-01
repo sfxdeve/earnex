@@ -29,7 +29,7 @@ export default function DepositPage() {
 	const { isPending: sessionPending, data: sessionData } =
 		authClient.useSession();
 	const {
-		data: bankData,
+		data: _bankData,
 		isLoading: bankLoading,
 		refetch: refetchAccounts,
 	} = useQuery(
