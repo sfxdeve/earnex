@@ -1,7 +1,7 @@
 import prisma from "@earnex/db";
 import Stripe from "stripe";
 import z from "zod";
-import { protectedProcedure } from "..";
+import { protectedProcedure, publicProcedure } from "..";
 
 // biome-ignore lint/style/noNonNullAssertion: <>
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -9,13 +9,82 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export const paymentRouter = {
+	webhook: publicProcedure
+		.input(z.object({ body: z.any(), signature: z.string() }))
+		.handler(async ({ input }) => {
+			let event: Stripe.Event;
+
+			try {
+				event = stripe.webhooks.constructEvent(
+					input.body,
+					input.signature,
+					// biome-ignore lint/style/noNonNullAssertion: <>
+					process.env.STRIPE_WEBHOOK_SECRET!,
+				);
+			} catch {
+				throw new Error("Invalid webhook signature");
+			}
+
+			if (event.type === "payment_intent.succeeded") {
+				const payment = event.data.object as Stripe.PaymentIntent;
+
+				const user = await prisma.user.findUnique({
+					where: { stripeCustomerId: payment.customer as string },
+				});
+
+				if (!user) return;
+
+				const transaction = await prisma.transaction.findUnique({
+					where: { stripePaymentIntentId: payment.id },
+				});
+
+				if (!transaction) return;
+
+				await prisma.$transaction([
+					prisma.transaction.update({
+						where: { id: transaction.id },
+						data: { status: "COMPLETED" },
+					}),
+
+					prisma.user.update({
+						where: { id: user.id },
+						data: { balanceUsd: { increment: payment.amount / 100 } },
+					}),
+				]);
+			}
+
+			if (event.type === "payout.paid") {
+				const payout = event.data.object as Stripe.Payout;
+
+				const tx = await prisma.transaction.findUnique({
+					where: { stripePayoutId: payout.id },
+				});
+
+				if (!tx) return;
+
+				await prisma.$transaction([
+					prisma.transaction.update({
+						where: { id: tx.id },
+						data: { status: "COMPLETED" },
+					}),
+
+					prisma.user.update({
+						where: { id: tx.userId },
+						data: { balanceUsd: { decrement: tx.amount } },
+					}),
+				]);
+			}
+
+			return { success: true };
+		}),
+
 	getTransactions: protectedProcedure.handler(async ({ context }) => {
 		const transactions = await prisma.transaction.findMany({
 			where: { userId: context.session.user.id },
 			orderBy: { createdAt: "desc" },
 		});
 
-		return transactions;
+		return { transactions };
 	}),
 	depositRequest: protectedProcedure
 		.input(
@@ -33,18 +102,19 @@ export const paymentRouter = {
 				const payment = await stripe.paymentIntents.create({
 					amount: Math.round(input.amount * 100),
 					currency: "usd",
-					customer: user.stripeCustomerId ?? undefined,
+					// biome-ignore lint/style/noNonNullAssertion: <>
+					customer: user.stripeCustomerId!,
 					payment_method: input.paymentMethodId,
+					confirm: true,
+					off_session: true,
 				});
 
 				const transaction = await prisma.transaction.create({
 					data: {
-						id: payment.id,
 						type: "DEPOSIT",
 						status: "PENDING",
 						amount: input.amount,
 						stripePaymentIntentId: payment.id,
-						stripePaymentMethodId: input.paymentMethodId,
 						user: {
 							connect: { id: user.id },
 						},
@@ -87,12 +157,10 @@ export const paymentRouter = {
 
 				const transaction = await prisma.transaction.create({
 					data: {
-						id: payout.id,
-						type: "DEPOSIT",
+						type: "WITHDRAWAL",
 						status: "PENDING",
 						amount: input.amount,
 						stripePayoutId: payout.id,
-						stripePaymentMethodId: input.paymentMethodId,
 						user: {
 							connect: { id: user.id },
 						},
@@ -116,7 +184,7 @@ export const paymentRouter = {
 			orderBy: { isDefault: "asc", createdAt: "desc" },
 		});
 
-		return cards;
+		return { cards };
 	}),
 	saveCard: protectedProcedure
 		.input(
@@ -132,7 +200,6 @@ export const paymentRouter = {
 
 				const card = await prisma.card.create({
 					data: {
-						id: paymentMethod.id,
 						stripePaymentMethodId: paymentMethod.id,
 						// biome-ignore lint/style/noNonNullAssertion: <>
 						brand: paymentMethod.card!.brand,
@@ -148,7 +215,7 @@ export const paymentRouter = {
 					},
 				});
 
-				return card;
+				return { card };
 			} catch (error) {
 				if (error instanceof Stripe.errors.StripeError) {
 					throw new Error(error.message);
