@@ -15,6 +15,8 @@ model User {
   accounts    Account[]
   finAccounts FinAccount[]
 
+  info Info?
+
   @@unique([email])
   @@map("user")
 }
@@ -65,4 +67,17 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Info {
+  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  phone     String
+  country   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("info")
 }

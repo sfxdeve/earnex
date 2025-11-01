@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -10,18 +11,31 @@ import { NativeButton } from "@/components/ui/native-button";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+import { orpc } from "@/utils/orpc";
 
 export function SignUpForm() {
 	const { isPending } = authClient.useSession();
+
+	const createInfpMutation = useMutation(
+		orpc.auth.createInfo.mutationOptions({
+			onSuccess: () => {
+				form.reset();
+			},
+			onError: (error: Error) => {
+				toast.error(error.message);
+			},
+		}),
+	);
 
 	const form = useForm({
 		defaultValues: {
 			email: "",
 			password: "",
+			phone: "",
 			country: "",
 		},
 		onSubmit: async ({ value }) => {
-			await authClient.signUp.email(
+			const { data } = await authClient.signUp.email(
 				{
 					name: "",
 					email: value.email,
@@ -39,11 +53,24 @@ export function SignUpForm() {
 					},
 				},
 			);
+
+			if (data) {
+				const userId = data.user.id;
+
+				createInfpMutation.mutate({
+					country: value.country,
+					phone: value.phone,
+					userId: userId,
+				});
+			}
 		},
 		validators: {
 			onSubmit: z.object({
 				email: z.email("Invalid email address"),
 				password: z.string().min(8, "Password must be at least 8 characters"),
+				phone: z
+					.string()
+					.min(10, "Phone number must be at least 10 characters"),
 				country: z.string().min(2, "Country must be at least 2 characters"),
 			}),
 		},

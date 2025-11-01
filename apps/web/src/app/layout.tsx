@@ -14,7 +14,8 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
 		<html lang="en" suppressHydrationWarning>
 			<body className={`${sora.variable} antialiased`}>
 				<Providers>
-					<div className="grid h-dvh grid-rows-[auto_1fr]">{children}</div>
+					{/* <div className="grid h-dvh grid-rows-[auto_1fr]">{children}</div> */}
+					{children}
 				</Providers>
 			</body>
 		</html>
