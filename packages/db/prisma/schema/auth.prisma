@@ -1,9 +1,13 @@
 model User {
-  id            String   @id @map("_id")
+  id            String    @id @map("_id")
   name          String
   email         String
   emailVerified Boolean
   image         String?
+  role          String?
+  banned        Boolean?
+  banReason     String?
+  banExpires    DateTime?
   createdAt     DateTime
   updatedAt     DateTime
 
@@ -16,13 +20,14 @@ model User {
 }
 
 model Session {
-  id        String   @id @map("_id")
-  expiresAt DateTime
-  token     String
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime
-  updatedAt DateTime
+  id             String   @id @map("_id")
+  expiresAt      DateTime
+  token          String
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+  createdAt      DateTime
+  updatedAt      DateTime
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

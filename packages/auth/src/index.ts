@@ -2,6 +2,7 @@ import prisma from "@earnex/db";
 import { sendEmail } from "@earnex/nodemailer";
 import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin } from "better-auth/plugins";
 
 export const auth = betterAuth<BetterAuthOptions>({
 	database: prismaAdapter(prisma, {
@@ -27,4 +28,5 @@ export const auth = betterAuth<BetterAuthOptions>({
 			});
 		},
 	},
+	plugins: [admin()],
 });
