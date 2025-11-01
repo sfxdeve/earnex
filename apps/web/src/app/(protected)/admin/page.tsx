@@ -407,12 +407,13 @@ export default function AdminPage() {
 													No accounts found for this user
 												</p>
 											) : (
-												<div className={cn("space-y-2")}>
+												<div className={cn("space-y-1")}>
 													{accountsData?.accounts.map((account) => (
-														<Card
+														<button
 															key={account.id}
+															type="button"
 															className={cn(
-																"cursor-pointer border-primary bg-transparent transition-colors hover:bg-accent/50",
+																"flex w-full cursor-pointer items-center justify-between rounded-md border border-primary px-4 py-3 text-left transition-colors hover:bg-accent/50",
 															)}
 															onClick={() => {
 																router.push(
@@ -422,18 +423,24 @@ export default function AdminPage() {
 																);
 															}}
 														>
-															<CardHeader>
-																<CardTitle className={cn("text-lg")}>
+															<div className={cn("flex flex-col gap-1")}>
+																<span className={cn("font-semibold")}>
 																	{account.name}
-																</CardTitle>
-															</CardHeader>
-															<Separator />
-															<CardFooter
+																</span>
+																<span className={cn("text-gray-400 text-xs")}>
+																	{account.type || "N/A"}
+																</span>
+															</div>
+															<div
 																className={cn(
-																	"flex items-center justify-between gap-4 text-sm",
+																	"flex items-center gap-6 text-sm",
 																)}
 															>
-																<div className={cn("flex flex-col gap-1")}>
+																<div
+																	className={cn(
+																		"flex flex-col gap-1 text-right",
+																	)}
+																>
 																	<span className={cn("text-gray-400 text-xs")}>
 																		Balance
 																	</span>
@@ -441,7 +448,11 @@ export default function AdminPage() {
 																		${account.balance || 0}
 																	</span>
 																</div>
-																<div className={cn("flex flex-col gap-1")}>
+																<div
+																	className={cn(
+																		"flex flex-col gap-1 text-right",
+																	)}
+																>
 																	<span className={cn("text-gray-400 text-xs")}>
 																		Total
 																	</span>
@@ -449,8 +460,8 @@ export default function AdminPage() {
 																		${account.total || 0}
 																	</span>
 																</div>
-															</CardFooter>
-														</Card>
+															</div>
+														</button>
 													))}
 												</div>
 											)}

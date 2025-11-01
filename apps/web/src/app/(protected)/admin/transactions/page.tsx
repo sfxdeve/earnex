@@ -177,34 +177,40 @@ export default function AdminTransactionsPage() {
 				<Separator className={cn("mt-3 mb-6")} />
 
 				<div className={cn("space-y-6")}>
-					{/* Account Summary */}
-					{selectedAccount && (
-						<div className={cn("rounded-lg border p-4")}>
-							<h4 className={cn("mb-2 font-semibold")}>
-								{selectedAccount.name}
-							</h4>
-							<div className={cn("grid grid-cols-2 gap-4 text-sm")}>
-								<div>
-									<span className={cn("text-gray-400")}>Balance:</span>
-									<span className={cn("ml-2 font-semibold")}>
-										${selectedAccount.balance || 0}
-									</span>
-								</div>
-								<div>
-									<span className={cn("text-gray-400")}>Total:</span>
-									<span className={cn("ml-2 font-semibold")}>
-										${selectedAccount.total || 0}
-									</span>
+					{/* Account Summary and Actions Side by Side */}
+					{selectedAccount && selectedAccountId && (
+						<div
+							className={cn("flex flex-col gap-4 sm:flex-row sm:items-start")}
+						>
+							{/* Account Info */}
+							<div className={cn("flex-1 rounded-lg border p-4")}>
+								<h4 className={cn("mb-2 font-semibold")}>
+									{selectedAccount.name}
+								</h4>
+								<div className={cn("grid grid-cols-2 gap-4 text-sm")}>
+									<div>
+										<span className={cn("text-gray-400")}>Balance:</span>
+										<span className={cn("ml-2 font-semibold")}>
+											${selectedAccount.balance || 0}
+										</span>
+									</div>
+									<div>
+										<span className={cn("text-gray-400")}>Total:</span>
+										<span className={cn("ml-2 font-semibold")}>
+											${selectedAccount.total || 0}
+										</span>
+									</div>
+									<div className={cn("col-span-2")}>
+										<span className={cn("text-gray-400")}>Type:</span>
+										<span className={cn("ml-2 font-semibold")}>
+											{selectedAccount.type || "N/A"}
+										</span>
+									</div>
 								</div>
 							</div>
-						</div>
-					)}
 
-					{/* Display Transactions & Investments */}
-					{selectedAccountId && (
-						<>
 							{/* Account Actions */}
-							<div className={cn("flex gap-2")}>
+							<div className={cn("flex flex-col gap-2 sm:w-48")}>
 								<Dialog
 									open={depositOpen}
 									onOpenChange={(open) => {
@@ -213,7 +219,9 @@ export default function AdminTransactionsPage() {
 									}}
 								>
 									<DialogTrigger asChild>
-										<Button variant="outline">Deposit</Button>
+										<Button variant="outline" className={cn("w-full")}>
+											Deposit
+										</Button>
 									</DialogTrigger>
 									<DialogContent>
 										<DialogHeader>
@@ -278,7 +286,9 @@ export default function AdminTransactionsPage() {
 									}}
 								>
 									<DialogTrigger asChild>
-										<Button variant="outline">Withdraw</Button>
+										<Button variant="outline" className={cn("w-full")}>
+											Withdraw
+										</Button>
 									</DialogTrigger>
 									<DialogContent>
 										<DialogHeader>
@@ -343,11 +353,13 @@ export default function AdminTransactionsPage() {
 									}}
 								>
 									<DialogTrigger asChild>
-										<Button variant="outline">Create Investment</Button>
+										<Button variant="outline" className={cn("w-full")}>
+											Invest
+										</Button>
 									</DialogTrigger>
 									<DialogContent>
 										<DialogHeader>
-											<DialogTitle>Create Investment</DialogTitle>
+											<DialogTitle>Make Investment</DialogTitle>
 										</DialogHeader>
 										<form
 											onSubmit={(e) => {
@@ -417,14 +429,19 @@ export default function AdminTransactionsPage() {
 												>
 													{createInvestmentMutation.isPending
 														? "Creating..."
-														: "Create"}
+														: "Invest"}
 												</Button>
 											</div>
 										</form>
 									</DialogContent>
 								</Dialog>
 							</div>
+						</div>
+					)}
 
+					{/* Display Transactions & Investments */}
+					{selectedAccountId && (
+						<>
 							<div className={cn("space-y-4")}>
 								<h3 className={cn("font-semibold text-xl")}>Transactions</h3>
 								{transactionsLoading ? (
