@@ -34,6 +34,7 @@ export function Header() {
 	};
 
 	const userRole = session?.user?.role?.toUpperCase() || "USER";
+	const isAdmin = session?.user?.role === "admin";
 	const userImage = session?.user?.image;
 
 	return (
@@ -43,32 +44,34 @@ export function Header() {
 					Earnex Global
 				</h1>
 				{/* Desktop Navigation */}
-				<ul className={cn("hidden items-center gap-6 lg:flex lg:gap-10")}>
-					<li
-						className={cn(
-							"font-medium text-base text-gray-700 lg:text-lg",
-							pathname === routes.protected.dashboard && "text-foreground",
-						)}
-					>
-						<Link href={routes.protected.dashboard}>Dashboard</Link>
-					</li>
-					<li
-						className={cn(
-							"font-medium text-base text-gray-700 lg:text-lg",
-							pathname === routes.protected.deposit && "text-foreground",
-						)}
-					>
-						<Link href={routes.protected.deposit}>Deposit</Link>
-					</li>
-					<li
-						className={cn(
-							"font-medium text-base text-gray-700 lg:text-lg",
-							pathname === routes.protected.withdrawal && "text-foreground",
-						)}
-					>
-						<Link href={routes.protected.withdrawal}>Withdrawal</Link>
-					</li>
-				</ul>
+				{!isAdmin && (
+					<ul className={cn("hidden items-center gap-6 lg:flex lg:gap-10")}>
+						<li
+							className={cn(
+								"font-medium text-base text-gray-700 lg:text-lg",
+								pathname === routes.protected.dashboard && "text-foreground",
+							)}
+						>
+							<Link href={routes.protected.dashboard}>Dashboard</Link>
+						</li>
+						<li
+							className={cn(
+								"font-medium text-base text-gray-700 lg:text-lg",
+								pathname === routes.protected.deposit && "text-foreground",
+							)}
+						>
+							<Link href={routes.protected.deposit}>Deposit</Link>
+						</li>
+						<li
+							className={cn(
+								"font-medium text-base text-gray-700 lg:text-lg",
+								pathname === routes.protected.withdrawal && "text-foreground",
+							)}
+						>
+							<Link href={routes.protected.withdrawal}>Withdrawal</Link>
+						</li>
+					</ul>
+				)}
 			</nav>
 			<div className={cn("flex items-center gap-2 sm:gap-4")}>
 				{/* Search Input with Icon - Hidden on mobile */}
@@ -166,47 +169,49 @@ export function Header() {
 							</div>
 
 							{/* Mobile Navigation */}
-							<ul className={cn("flex flex-col gap-4")}>
-								<li>
-									<Link
-										href={routes.protected.dashboard}
-										className={cn(
-											"block font-medium text-base",
-											pathname === routes.protected.dashboard
-												? "text-foreground"
-												: "text-gray-700",
-										)}
-									>
-										Dashboard
-									</Link>
-								</li>
-								<li>
-									<Link
-										href={routes.protected.deposit}
-										className={cn(
-											"block font-medium text-base",
-											pathname === routes.protected.deposit
-												? "text-foreground"
-												: "text-gray-700",
-										)}
-									>
-										Deposit
-									</Link>
-								</li>
-								<li>
-									<Link
-										href={routes.protected.withdrawal}
-										className={cn(
-											"block font-medium text-base",
-											pathname === routes.protected.withdrawal
-												? "text-foreground"
-												: "text-gray-700",
-										)}
-									>
-										Withdrawal
-									</Link>
-								</li>
-							</ul>
+							{!isAdmin && (
+								<ul className={cn("flex flex-col gap-4")}>
+									<li>
+										<Link
+											href={routes.protected.dashboard}
+											className={cn(
+												"block font-medium text-base",
+												pathname === routes.protected.dashboard
+													? "text-foreground"
+													: "text-gray-700",
+											)}
+										>
+											Dashboard
+										</Link>
+									</li>
+									<li>
+										<Link
+											href={routes.protected.deposit}
+											className={cn(
+												"block font-medium text-base",
+												pathname === routes.protected.deposit
+													? "text-foreground"
+													: "text-gray-700",
+											)}
+										>
+											Deposit
+										</Link>
+									</li>
+									<li>
+										<Link
+											href={routes.protected.withdrawal}
+											className={cn(
+												"block font-medium text-base",
+												pathname === routes.protected.withdrawal
+													? "text-foreground"
+													: "text-gray-700",
+											)}
+										>
+											Withdrawal
+										</Link>
+									</li>
+								</ul>
+							)}
 
 							{/* Mobile User Info */}
 							<Button

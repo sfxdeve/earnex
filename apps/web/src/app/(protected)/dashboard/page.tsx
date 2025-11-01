@@ -3,7 +3,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -33,6 +33,7 @@ import { orpc } from "@/utils/orpc";
 
 export default function DashboardPage() {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [selectedAccountId, setSelectedAccountId] = useState<string>("");
 
 	const { isPending: sessionPending, data: sessionData } =
 		authClient.useSession();
@@ -46,6 +47,18 @@ export default function DashboardPage() {
 			enabled: !!sessionData?.user.id,
 		}),
 	);
+
+	// Set initial selected account to first account
+	useEffect(() => {
+		if (
+			bankData?.accounts &&
+			bankData.accounts.length > 0 &&
+			!selectedAccountId
+		) {
+			setSelectedAccountId(bankData.accounts[0].id);
+		}
+	}, [bankData?.accounts, selectedAccountId]);
+
 	const createAccountMutation = useMutation(
 		orpc.bank.createAccount.mutationOptions({
 			onSuccess: () => {
@@ -198,7 +211,10 @@ export default function DashboardPage() {
 					)}
 				>
 					<div className={cn("space-y-6 sm:space-y-10")}>
-						<Select defaultValue={bankData?.accounts[0]?.id}>
+						<Select
+							value={selectedAccountId}
+							onValueChange={setSelectedAccountId}
+						>
 							<SelectTrigger className="w-full py-5 sm:w-56">
 								<SelectValue placeholder="Select an account" />
 							</SelectTrigger>
@@ -213,28 +229,38 @@ export default function DashboardPage() {
 							</SelectContent>
 						</Select>
 
-						{bankData?.accounts[0] && (
-							<>
-								<ul
-									className={cn(
-										"flex flex-wrap items-center gap-4 text-primary text-xs sm:gap-6",
-									)}
-								>
-									<li>Real</li>
-									<li>MT5</li>
-									<li>Standard</li>
-									<li>#4914786</li>
-								</ul>
-								<p>
-									<span
-										className={cn("font-bold text-3xl sm:text-4xl lg:text-5xl")}
-									>
-										{bankData.accounts[0].balance || 0}
-									</span>
-									<span className={cn("text-lg sm:text-xl")}> USD</span>
-								</p>
-							</>
-						)}
+						{selectedAccountId &&
+							(() => {
+								const selectedAccount = bankData?.accounts.find(
+									(account) => account.id === selectedAccountId,
+								);
+								return (
+									selectedAccount && (
+										<>
+											<ul
+												className={cn(
+													"flex flex-wrap items-center gap-4 text-primary text-xs sm:gap-6",
+												)}
+											>
+												<li>Real</li>
+												<li>MT5</li>
+												<li>Standard</li>
+												<li>#4914786</li>
+											</ul>
+											<p>
+												<span
+													className={cn(
+														"font-bold text-3xl sm:text-4xl lg:text-5xl",
+													)}
+												>
+													{selectedAccount.balance || 0}
+												</span>
+												<span className={cn("text-lg sm:text-xl")}> USD</span>
+											</p>
+										</>
+									)
+								);
+							})()}
 					</div>
 					<nav>
 						<ul className={cn("flex flex-wrap items-center gap-3 sm:gap-6")}>
