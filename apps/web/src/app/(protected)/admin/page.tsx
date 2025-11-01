@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
+import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 
@@ -88,7 +89,6 @@ export default function AdminPage() {
 		},
 	});
 
-	// Fetch accounts for selected user
 	const {
 		data: accountsData,
 		isLoading: accountsLoading,
@@ -149,7 +149,7 @@ export default function AdminPage() {
 					>
 						<DialogTrigger asChild>
 							<Button variant="outline" size="lg">
-								Create User
+								Create
 							</Button>
 						</DialogTrigger>
 						<DialogContent className="sm:max-w-md">
@@ -225,9 +225,7 @@ export default function AdminPage() {
 										Cancel
 									</Button>
 									<Button type="submit" disabled={createUserMutation.isPending}>
-										{createUserMutation.isPending
-											? "Creating..."
-											: "Create User"}
+										{createUserMutation.isPending ? "Creating..." : "Create"}
 									</Button>
 								</div>
 							</form>
@@ -417,7 +415,7 @@ export default function AdminPage() {
 															)}
 															onClick={() => {
 																router.push(
-																	`/admin/transactions?userId=${user.id}&accountId=${account.id}` as Parameters<
+																	`${routes.protected.admin.transactions}?userId=${user.id}&accountId=${account.id}` as Parameters<
 																		typeof router.push
 																	>[0],
 																);
