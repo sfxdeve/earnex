@@ -1,7 +1,18 @@
 "use client";
 
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import {
 	Select,
@@ -15,47 +26,120 @@ import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+import { orpc } from "@/utils/orpc";
 
 export default function DashboardPage() {
-	const { isPending, data } = authClient.useSession();
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [newAccount, setNewAccount] = useState({
+		name: "",
+	});
 
-	if (isPending) {
+	const { isPending: sessionPending, data: sessionData } =
+		authClient.useSession();
+	const { data: bankData, isLoading: bankLoading } = useQuery(
+		orpc.bank.getAccounts.queryOptions(),
+	);
+	const createAccountMutation = useMutation(
+		orpc.bank.createAccount.mutationOptions({
+			onSuccess: () => {
+				setIsDialogOpen(false);
+
+				setNewAccount({ name: "" });
+			},
+		}),
+	);
+
+	if (sessionPending || bankLoading) {
 		return <Loader />;
 	}
+
+	const handleCreateAccount = (e: React.FormEvent) => {
+		e.preventDefault();
+
+		createAccountMutation.mutate({ ...newAccount, type: "" });
+	};
 
 	return (
 		<div className={cn("flex flex-1 flex-col justify-between")}>
 			<div>
 				<div className={cn("flex items-center justify-between")}>
 					<h2 className={cn("font-bold text-3xl")}>My Accounts</h2>
-					<Button variant="outline" size="lg">
-						Open New Account
-					</Button>
+					<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+						<DialogTrigger asChild>
+							<Button variant="outline" size="lg">
+								Open New Account
+							</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Create New Account</DialogTitle>
+							</DialogHeader>
+							<form onSubmit={handleCreateAccount} className="space-y-4">
+								<div className="space-y-2">
+									<Label htmlFor="accountName">Account Name</Label>
+									<Input
+										id="accountName"
+										value={newAccount.name}
+										onChange={(e) =>
+											setNewAccount((prev) => ({
+												...prev,
+												name: e.target.value,
+											}))
+										}
+										placeholder="Enter account name"
+										required
+									/>
+								</div>
+								<div className="flex justify-end">
+									<Button
+										type="submit"
+										disabled={createAccountMutation.isPending}
+									>
+										{createAccountMutation.isPending
+											? "Creating..."
+											: "Create Account"}
+									</Button>
+								</div>
+							</form>
+						</DialogContent>
+					</Dialog>
 				</div>
 				<Separator className={cn("mt-3 mb-6")} />
 				<div className={cn("flex items-end justify-between")}>
 					<div className={cn("space-y-10")}>
-						<Select defaultValue="sarah-allen">
+						<Select defaultValue={bankData?.accounts[0]?.id}>
 							<SelectTrigger className="w-56 py-5">
-								<SelectValue />
+								<SelectValue placeholder="Select an account" />
 							</SelectTrigger>
 							<SelectContent>
 								<SelectGroup>
-									<SelectItem value="sarah-allen">Sarah Allen</SelectItem>
+									{bankData?.accounts.map((account) => (
+										<SelectItem key={account.id} value={account.id}>
+											{account.name}
+										</SelectItem>
+									))}
 								</SelectGroup>
 							</SelectContent>
 						</Select>
 
-						<ul className={cn("flex items-center gap-6 text-primary text-xs")}>
-							<li>Real</li>
-							<li>MT5</li>
-							<li>Standard</li>
-							<li>#4914786</li>
-						</ul>
-						<p>
-							<span className={cn("font-bold text-5xl")}>110</span>
-							<span className={cn("text-xl")}>.92 USD</span>
-						</p>
+						{bankData?.accounts[0] && (
+							<>
+								<ul
+									className={cn("flex items-center gap-6 text-primary text-xs")}
+								>
+									<li>Real</li>
+									<li>MT5</li>
+									<li>Standard</li>
+									<li>#4914786</li>
+								</ul>
+								<p>
+									<span className={cn("font-bold text-5xl")}>
+										{bankData.accounts[0].balance || 0}
+									</span>
+									<span className={cn("text-xl")}> USD</span>
+								</p>
+							</>
+						)}
 					</div>
 					<nav>
 						<ul className={cn("flex items-center gap-6")}>
@@ -94,7 +178,7 @@ export default function DashboardPage() {
 				</div>
 			</div>
 			<div className={cn("ml-auto text-right text-gray-400 text-sm")}>
-				<p>Email: {data?.user.email}</p>
+				<p>Email: {sessionData?.user.email}</p>
 				<p>&copy; 2009 - 2025. Earnex Global</p>
 			</div>
 		</div>
