@@ -1,13 +1,18 @@
 model User {
-  id            String    @id @map("_id")
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
+  id               String   @id @map("_id")
+  stripeCustomerId String?  @unique
+  name             String
+  email            String
+  emailVerified    Boolean
+  image            String?
+  balanceUsd       Float    @default(0)
+  createdAt        DateTime
+  updatedAt        DateTime
+
+  sessions     Session[]
+  accounts     Account[]
+  cards        Card[]
+  transactions Transaction[]
 
   @@unique([email])
   @@map("user")
@@ -17,12 +22,13 @@ model Session {
   id        String   @id @map("_id")
   expiresAt DateTime
   token     String
-  createdAt DateTime
-  updatedAt DateTime
   ipAddress String?
   userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime
+  updatedAt DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@map("session")
@@ -32,8 +38,6 @@ model Account {
   id                    String    @id @map("_id")
   accountId             String
   providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -43,6 +47,9 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("account")
 }
@@ -56,4 +63,41 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Card {
+  id                    String   @id @map("_id")
+  stripePaymentMethodId String   @unique
+  brand                 String
+  last4                 String
+  expMonth              Int
+  expYear               Int
+  isDefault             Boolean  @default(false)
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("card")
+}
+
+model Transaction {
+  id                    String   @id @map("_id")
+  type                  String
+  status                String
+  currency              String   @default("USD")
+  amount                Float
+  stripePaymentIntentId String?
+  stripePayoutId        String?
+  stripePaymentMethodId String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("transaction")
 }
