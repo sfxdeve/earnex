@@ -8,7 +8,11 @@ import { SignUpForm } from "./form";
 export default function SignUpPage() {
 	return (
 		<main>
-			<section className={cn("relative flex min-h-screen flex-col p-24")}>
+			<section
+				className={cn(
+					"relative flex min-h-screen flex-col p-4 py-8 sm:p-8 sm:py-12 lg:p-24",
+				)}
+			>
 				<Image
 					src={assets.pattern.src}
 					alt={assets.pattern.alt}
@@ -17,17 +21,27 @@ export default function SignUpPage() {
 					)}
 				/>
 
-				<div className={cn("container mx-auto flex flex-1")}>
+				<div
+					className={cn(
+						"container mx-auto flex flex-1 flex-col gap-8 lg:flex-row",
+					)}
+				>
 					{/* Left Section */}
 					<div className={cn("flex flex-1 flex-col justify-between gap-6")}>
 						{/* Brand */}
 						<div>
-							<h1 className={cn("font-bold text-3xl")}>{content.brand}</h1>
+							<h1 className={cn("font-bold text-xl sm:text-2xl lg:text-3xl")}>
+								{content.brand}
+							</h1>
 						</div>
 
 						{/* Main Heading */}
-						<div className={cn("space-y-12")}>
-							<h2 className={cn("text-7xl tracking-wider")}>
+						<div className={cn("space-y-6 sm:space-y-8 lg:space-y-12")}>
+							<h2
+								className={cn(
+									"text-3xl tracking-wider sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl",
+								)}
+							>
 								{content.heading.title} <br />
 								<span className={cn("font-bold")}>
 									{content.heading.highlight}
@@ -35,7 +49,7 @@ export default function SignUpPage() {
 							</h2>
 
 							{/* Auth Link */}
-							<p className={cn("text-2xl")}>
+							<p className={cn("text-base sm:text-lg lg:text-xl xl:text-2xl")}>
 								{content.auth.question}{" "}
 								<Link
 									href={content.auth.linkUrl}
@@ -48,17 +62,23 @@ export default function SignUpPage() {
 
 						{/* Footer */}
 						<div>
-							<p className={cn("text-lg")}>{content.footer.text}</p>
+							<p className={cn("text-sm sm:text-base lg:text-lg")}>
+								{content.footer.text}
+							</p>
 						</div>
 					</div>
 
 					{/* Right Section */}
 					<div className={cn("flex flex-1 flex-col justify-between gap-6")}>
 						<div className={cn("space-y-4")}>
-							<h3 className={cn("font-bold text-xl tracking-wide")}>
+							<h3 className={cn("font-bold text-lg tracking-wide sm:text-xl")}>
 								{content.form.heading}
 							</h3>
-							<h4 className={cn("text-4xl tracking-wider")}>
+							<h4
+								className={cn(
+									"text-2xl tracking-wider sm:text-3xl lg:text-4xl",
+								)}
+							>
 								{content.form.subheading}
 							</h4>
 						</div>
@@ -68,7 +88,9 @@ export default function SignUpPage() {
 
 						{/* Info Text */}
 						<div className={cn("space-y-4")}>
-							<p className={cn("leading-7")}>{content.form.note}</p>
+							<p className={cn("text-sm leading-7 sm:text-base")}>
+								{content.form.note}
+							</p>
 						</div>
 					</div>
 				</div>

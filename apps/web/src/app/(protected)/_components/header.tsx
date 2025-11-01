@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, ChevronDown, Search } from "lucide-react";
+import { Bell, ChevronDown, Menu, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -13,6 +13,13 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import {
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -36,13 +43,16 @@ export function Header() {
 	const userImage = session?.user?.image;
 
 	return (
-		<header className={cn("flex items-center justify-between gap-6")}>
-			<nav className={cn("flex items-center gap-20")}>
-				<h1 className={cn("font-bold text-2xl")}>Earnex Global</h1>
-				<ul className={cn("flex gap-10")}>
+		<header className={cn("relative flex items-center justify-between gap-4")}>
+			<nav className={cn("flex items-center gap-4 sm:gap-10 lg:gap-20")}>
+				<h1 className={cn("font-bold text-lg sm:text-xl lg:text-2xl")}>
+					Earnex Global
+				</h1>
+				{/* Desktop Navigation */}
+				<ul className={cn("hidden items-center gap-6 lg:flex lg:gap-10")}>
 					<li
 						className={cn(
-							"font-medium text-gray-700 text-lg",
+							"font-medium text-base text-gray-700 lg:text-lg",
 							pathname === routes.protected.dashboard && "text-foreground",
 						)}
 					>
@@ -50,7 +60,7 @@ export function Header() {
 					</li>
 					<li
 						className={cn(
-							"font-medium text-gray-700 text-lg",
+							"font-medium text-base text-gray-700 lg:text-lg",
 							pathname === routes.protected.deposit && "text-foreground",
 						)}
 					>
@@ -58,7 +68,7 @@ export function Header() {
 					</li>
 					<li
 						className={cn(
-							"font-medium text-gray-700 text-lg",
+							"font-medium text-base text-gray-700 lg:text-lg",
 							pathname === routes.protected.withdrawal && "text-foreground",
 						)}
 					>
@@ -66,11 +76,11 @@ export function Header() {
 					</li>
 				</ul>
 			</nav>
-			<div className={cn("flex items-center gap-4")}>
-				{/* Search Input with Icon */}
-				<div className={cn("relative")}>
+			<div className={cn("flex items-center gap-2 sm:gap-4")}>
+				{/* Search Input with Icon - Hidden on mobile */}
+				<div className={cn("relative hidden sm:block")}>
 					<Input
-						className={cn("w-56 rounded-full pr-10")}
+						className={cn("w-40 rounded-full pr-10 sm:w-56")}
 						placeholder="Search"
 					/>
 					<Search
@@ -90,8 +100,10 @@ export function Header() {
 					/>
 				</Button>
 
-				{/* User Role */}
-				<span className={cn("font-medium text-sm uppercase")}>{userRole}</span>
+				{/* User Role - Hidden on small screens */}
+				<span className={cn("hidden font-medium text-sm uppercase sm:inline")}>
+					{userRole}
+				</span>
 
 				{/* Avatar with Dropdown */}
 				{session?.user && (
@@ -123,7 +135,7 @@ export function Header() {
 										</div>
 									)}
 								</div>
-								<ChevronDown className={cn("size-4")} />
+								<ChevronDown className={cn("hidden size-4 sm:block")} />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
@@ -136,6 +148,84 @@ export function Header() {
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)}
+
+				{/* Mobile Menu Button */}
+				<Sheet>
+					<SheetTrigger asChild>
+						<Button variant="ghost" size="icon" className={cn("lg:hidden")}>
+							<Menu className={cn("size-5")} />
+						</Button>
+					</SheetTrigger>
+					<SheetContent side="left" className={cn("w-[300px] sm:w-[400px]")}>
+						<div className={cn("flex flex-col gap-6 px-4 pt-12")}>
+							{/* Mobile Search */}
+							<div className={cn("relative sm:hidden")}>
+								<Input
+									className={cn("w-full rounded-md pr-10")}
+									placeholder="Search"
+								/>
+								<Search
+									className={cn(
+										"-translate-y-1/2 absolute top-1/2 right-3 size-4 text-muted-foreground",
+									)}
+								/>
+							</div>
+
+							{/* Mobile Navigation */}
+							<ul className={cn("flex flex-col gap-4")}>
+								<li>
+									<Link
+										href={routes.protected.dashboard}
+										className={cn(
+											"block font-medium text-base",
+											pathname === routes.protected.dashboard
+												? "text-foreground"
+												: "text-gray-700",
+										)}
+									>
+										Dashboard
+									</Link>
+								</li>
+								<li>
+									<Link
+										href={routes.protected.deposit}
+										className={cn(
+											"block font-medium text-base",
+											pathname === routes.protected.deposit
+												? "text-foreground"
+												: "text-gray-700",
+										)}
+									>
+										Deposit
+									</Link>
+								</li>
+								<li>
+									<Link
+										href={routes.protected.withdrawal}
+										className={cn(
+											"block font-medium text-base",
+											pathname === routes.protected.withdrawal
+												? "text-foreground"
+												: "text-gray-700",
+										)}
+									>
+										Withdrawal
+									</Link>
+								</li>
+							</ul>
+
+							{/* Mobile User Info */}
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleSignOut}
+								className={cn("w-full cursor-pointer")}
+							>
+								Sign Out
+							</Button>
+						</div>
+					</SheetContent>
+				</Sheet>
 			</div>
 		</header>
 	);

@@ -19,9 +19,17 @@ export default function WithdrawalPage() {
 	return (
 		<div className={cn("flex flex-1 flex-col justify-between gap-4")}>
 			<div>
-				<div className={cn("flex items-center justify-between")}>
-					<h2 className={cn("font-bold text-3xl")}>Withdrawal</h2>
-					<Button variant="outline" size="lg">
+				<div
+					className={cn(
+						"flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between",
+					)}
+				>
+					<h2 className={cn("font-bold text-2xl sm:text-3xl")}>Withdrawal</h2>
+					<Button
+						variant="outline"
+						size="lg"
+						className={cn("w-full sm:w-auto")}
+					>
 						Open New Account
 					</Button>
 				</div>
@@ -43,8 +51,12 @@ export default function WithdrawalPage() {
 						<Card className={cn("gap-4 border-primary bg-primary")}>
 							<CardHeader>
 								<CardTitle>
-									<span className={cn("font-bold text-5xl")}>110</span>
-									<span className={cn("text-xl")}>.00 USD</span>
+									<span
+										className={cn("font-bold text-3xl sm:text-4xl lg:text-5xl")}
+									>
+										110
+									</span>
+									<span className={cn("text-lg sm:text-xl")}>.00 USD</span>
 								</CardTitle>
 							</CardHeader>
 							<Separator />
@@ -128,7 +140,11 @@ export default function WithdrawalPage() {
 					</div>
 				</div>
 			</div>
-			<div className={cn("ml-auto text-right text-gray-400 text-sm")}>
+			<div
+				className={cn(
+					"mt-8 text-left text-gray-400 text-sm sm:ml-auto sm:text-right",
+				)}
+			>
 				<p>Email: {data?.user.email}</p>
 				<p>&copy; 2009 - 2025. Earnex Global</p>
 			</div>

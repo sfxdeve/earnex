@@ -162,7 +162,7 @@ export default function AdminTransactionsPage() {
 		<div className={cn("flex flex-1 flex-col justify-between gap-4")}>
 			<div>
 				<div className={cn("flex items-center justify-between")}>
-					<h2 className={cn("font-bold text-3xl")}>
+					<h2 className={cn("font-bold text-2xl sm:text-3xl")}>
 						Transaction & Investment Management
 					</h2>
 				</div>
@@ -573,7 +573,11 @@ export default function AdminTransactionsPage() {
 					)}
 				</div>
 			</div>
-			<div className={cn("ml-auto text-right text-gray-400 text-sm")}>
+			<div
+				className={cn(
+					"mt-8 text-left text-gray-400 text-sm sm:ml-auto sm:text-right",
+				)}
+			>
 				<p>Email: {sessionData?.user.email}</p>
 				<p>&copy; 2009 - 2025. Earnex Global</p>
 			</div>

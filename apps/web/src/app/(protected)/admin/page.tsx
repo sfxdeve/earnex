@@ -170,8 +170,14 @@ export default function AdminPage() {
 	return (
 		<div className={cn("flex flex-1 flex-col justify-between gap-4")}>
 			<div>
-				<div className={cn("flex items-center justify-between")}>
-					<h2 className={cn("font-bold text-3xl")}>User Management</h2>
+				<div
+					className={cn(
+						"flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between",
+					)}
+				>
+					<h2 className={cn("font-bold text-2xl sm:text-3xl")}>
+						User Management
+					</h2>
 					<Dialog
 						open={isDialogOpen}
 						onOpenChange={(open) => {
@@ -182,7 +188,11 @@ export default function AdminPage() {
 						}}
 					>
 						<DialogTrigger asChild>
-							<Button variant="outline" size="lg">
+							<Button
+								variant="outline"
+								size="lg"
+								className={cn("w-full sm:w-auto")}
+							>
 								Create
 							</Button>
 						</DialogTrigger>
@@ -585,7 +595,11 @@ export default function AdminPage() {
 					)}
 				</div>
 			</div>
-			<div className={cn("ml-auto text-right text-gray-400 text-sm")}>
+			<div
+				className={cn(
+					"mt-8 text-left text-gray-400 text-sm sm:ml-auto sm:text-right",
+				)}
+			>
 				<p>Email: {sessionData?.user.email}</p>
 				<p>&copy; 2009 - 2025. Earnex Global</p>
 			</div>

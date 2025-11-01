@@ -40,7 +40,11 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
 	if (isPending) {
 		return (
 			<main>
-				<section className={cn("relative flex min-h-dvh flex-col px-24 py-12")}>
+				<section
+					className={cn(
+						"relative flex min-h-dvh flex-col px-4 py-6 sm:px-8 sm:py-8 lg:px-24 lg:py-12",
+					)}
+				>
 					<div
 						className={cn(
 							"container mx-auto flex flex-1 items-center justify-center",
@@ -59,9 +63,15 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
 
 	return (
 		<main>
-			<section className={cn("relative flex min-h-dvh flex-col px-24 py-12")}>
+			<section
+				className={cn(
+					"relative flex min-h-dvh flex-col px-4 py-6 sm:px-8 sm:py-8 lg:px-24 lg:py-12",
+				)}
+			>
 				<div
-					className={cn("container mx-auto flex flex-1 flex-col space-y-16")}
+					className={cn(
+						"container mx-auto flex flex-1 flex-col space-y-8 sm:space-y-12 lg:space-y-16",
+					)}
 				>
 					<Header />
 					{children}

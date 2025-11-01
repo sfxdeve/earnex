@@ -93,13 +93,21 @@ export default function DashboardPage() {
 	}
 
 	return (
-		<div className={cn("flex flex-1 flex-col justify-between")}>
+		<div className={cn("flex flex-1 flex-col justify-between gap-4")}>
 			<div>
-				<div className={cn("flex items-center justify-between")}>
-					<h2 className={cn("font-bold text-3xl")}>My Accounts</h2>
+				<div
+					className={cn(
+						"flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between",
+					)}
+				>
+					<h2 className={cn("font-bold text-2xl sm:text-3xl")}>My Accounts</h2>
 					<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 						<DialogTrigger asChild>
-							<Button variant="outline" size="lg">
+							<Button
+								variant="outline"
+								size="lg"
+								className={cn("w-full sm:w-auto")}
+							>
 								Open New Account
 							</Button>
 						</DialogTrigger>
@@ -184,10 +192,14 @@ export default function DashboardPage() {
 					</Dialog>
 				</div>
 				<Separator className={cn("mt-3 mb-6")} />
-				<div className={cn("flex items-end justify-between")}>
-					<div className={cn("space-y-10")}>
+				<div
+					className={cn(
+						"flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between",
+					)}
+				>
+					<div className={cn("space-y-6 sm:space-y-10")}>
 						<Select defaultValue={bankData?.accounts[0]?.id}>
-							<SelectTrigger className="w-56 py-5">
+							<SelectTrigger className="w-full py-5 sm:w-56">
 								<SelectValue placeholder="Select an account" />
 							</SelectTrigger>
 							<SelectContent>
@@ -204,7 +216,9 @@ export default function DashboardPage() {
 						{bankData?.accounts[0] && (
 							<>
 								<ul
-									className={cn("flex items-center gap-6 text-primary text-xs")}
+									className={cn(
+										"flex flex-wrap items-center gap-4 text-primary text-xs sm:gap-6",
+									)}
 								>
 									<li>Real</li>
 									<li>MT5</li>
@@ -212,20 +226,25 @@ export default function DashboardPage() {
 									<li>#4914786</li>
 								</ul>
 								<p>
-									<span className={cn("font-bold text-5xl")}>
+									<span
+										className={cn("font-bold text-3xl sm:text-4xl lg:text-5xl")}
+									>
 										{bankData.accounts[0].balance || 0}
 									</span>
-									<span className={cn("text-xl")}> USD</span>
+									<span className={cn("text-lg sm:text-xl")}> USD</span>
 								</p>
 							</>
 						)}
 					</div>
 					<nav>
-						<ul className={cn("flex items-center gap-6")}>
+						<ul className={cn("flex flex-wrap items-center gap-3 sm:gap-6")}>
 							<li>
 								<Link
 									className={cn(
-										buttonVariants({ variant: "outline", className: "px-8" }),
+										buttonVariants({
+											variant: "outline",
+											className: "w-full px-6 sm:w-auto sm:px-8",
+										}),
 									)}
 									href={routes.protected.deposit}
 								>
@@ -235,7 +254,10 @@ export default function DashboardPage() {
 							<li>
 								<Link
 									className={cn(
-										buttonVariants({ variant: "outline", className: "px-8" }),
+										buttonVariants({
+											variant: "outline",
+											className: "w-full px-6 sm:w-auto sm:px-8",
+										}),
 									)}
 									href={routes.protected.withdrawal}
 								>
@@ -245,7 +267,10 @@ export default function DashboardPage() {
 							<li>
 								<Link
 									className={cn(
-										buttonVariants({ variant: "default", className: "px-8" }),
+										buttonVariants({
+											variant: "default",
+											className: "w-full px-6 sm:w-auto sm:px-8",
+										}),
 									)}
 									href={routes.protected.trade}
 								>
@@ -256,7 +281,11 @@ export default function DashboardPage() {
 					</nav>
 				</div>
 			</div>
-			<div className={cn("ml-auto text-right text-gray-400 text-sm")}>
+			<div
+				className={cn(
+					"mt-8 text-left text-gray-400 text-sm sm:ml-auto sm:text-right",
+				)}
+			>
 				<p>Email: {sessionData?.user.email}</p>
 				<p>&copy; 2009 - 2025. Earnex Global</p>
 			</div>
