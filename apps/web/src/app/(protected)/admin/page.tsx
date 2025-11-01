@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { orpc } from "@/utils/orpc";
 
 interface UserFormData {
 	name: string;
@@ -33,12 +35,19 @@ interface UserFormData {
 }
 
 export default function AdminPage() {
+	const router = useRouter();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+	const [createAccountOpen, setCreateAccountOpen] = useState(false);
 	const [formData, setFormData] = useState<UserFormData>({
 		name: "",
 		email: "",
 		password: "",
 		role: "",
+	});
+	const [accountForm, setAccountForm] = useState({
+		name: "",
+		type: "",
 	});
 
 	const { isPending: sessionPending, data: sessionData } =
@@ -78,6 +87,32 @@ export default function AdminPage() {
 			toast.error(error?.message || "Failed to create user");
 		},
 	});
+
+	// Fetch accounts for selected user
+	const {
+		data: accountsData,
+		isLoading: accountsLoading,
+		refetch: refetchAccounts,
+	} = useQuery(
+		orpc.bank.getAccounts.queryOptions({
+			input: { userId: selectedUserId || "" },
+			enabled: !!selectedUserId,
+		}),
+	);
+
+	const createAccountMutation = useMutation(
+		orpc.bank.createAccount.mutationOptions({
+			onSuccess: () => {
+				toast.success("Account created successfully");
+				setCreateAccountOpen(false);
+				setAccountForm({ name: "", type: "" });
+				refetchAccounts();
+			},
+			onError: (error: Error) => {
+				toast.error(error?.message || "Failed to create account");
+			},
+		}),
+	);
 
 	const resetForm = () => {
 		setFormData({ name: "", email: "", password: "", role: "" });
@@ -214,38 +249,213 @@ export default function AdminPage() {
 								)}
 							>
 								{users.map((user) => (
-									<Card
+									<Dialog
 										key={user.id}
-										className={cn("gap-4 border-primary bg-transparent")}
+										onOpenChange={(open) => {
+											if (open) {
+												setSelectedUserId(user.id);
+											} else {
+												setSelectedUserId(null);
+											}
+										}}
 									>
-										<CardHeader>
-											<CardTitle>{user.name}</CardTitle>
-											{user.role && (
-												<CardAction>
-													<span className="rounded bg-secondary px-2 py-0.5 text-xs">
-														{user.role}
-													</span>
-												</CardAction>
+										<DialogTrigger asChild>
+											<Card
+												className={cn(
+													"cursor-pointer gap-4 border-primary bg-transparent transition-colors hover:bg-accent/50",
+												)}
+											>
+												<CardHeader>
+													<CardTitle>{user.name}</CardTitle>
+													{user.role && (
+														<CardAction>
+															<span className="rounded bg-secondary px-2 py-0.5 text-xs">
+																{user.role}
+															</span>
+														</CardAction>
+													)}
+												</CardHeader>
+												<Separator />
+												<CardFooter
+													className={cn("flex-col items-stretch gap-2 text-xs")}
+												>
+													<p className={cn("space-x-2")}>
+														<span className={cn("text-gray-400")}>Email</span>
+														<span>{user.email}</span>
+													</p>
+													<p className={cn("space-x-2")}>
+														<span className={cn("text-gray-400")}>Created</span>
+														<span>
+															{user.createdAt
+																? new Date(user.createdAt).toLocaleDateString()
+																: "N/A"}
+														</span>
+													</p>
+												</CardFooter>
+											</Card>
+										</DialogTrigger>
+										<DialogContent className="sm:max-w-lg">
+											<DialogHeader>
+												<DialogTitle>{user.name}&apos;s Accounts</DialogTitle>
+											</DialogHeader>
+											<div className={cn("mb-4 flex justify-end")}>
+												<Dialog
+													open={createAccountOpen}
+													onOpenChange={(open) => {
+														setCreateAccountOpen(open);
+														if (!open) setAccountForm({ name: "", type: "" });
+													}}
+												>
+													<DialogTrigger asChild>
+														<Button variant="outline" size="sm">
+															Create Account
+														</Button>
+													</DialogTrigger>
+													<DialogContent>
+														<DialogHeader>
+															<DialogTitle>Create New Account</DialogTitle>
+														</DialogHeader>
+														<form
+															onSubmit={(e) => {
+																e.preventDefault();
+																if (!accountForm.name || !accountForm.type) {
+																	toast.error("Name and type are required");
+																	return;
+																}
+																if (!selectedUserId) {
+																	toast.error("User not selected");
+																	return;
+																}
+																createAccountMutation.mutate({
+																	name: accountForm.name,
+																	type: accountForm.type,
+																	userId: selectedUserId,
+																} as {
+																	name: string;
+																	type: string;
+																	userId: string;
+																});
+															}}
+															className="space-y-4"
+														>
+															<div className="space-y-2">
+																<Label htmlFor="account-name">
+																	Account Name
+																</Label>
+																<Input
+																	id="account-name"
+																	value={accountForm.name}
+																	onChange={(e) =>
+																		setAccountForm((prev) => ({
+																			...prev,
+																			name: e.target.value,
+																		}))
+																	}
+																	placeholder="Enter account name"
+																	required
+																/>
+															</div>
+															<div className="space-y-2">
+																<Label htmlFor="account-type">
+																	Account Type
+																</Label>
+																<Input
+																	id="account-type"
+																	value={accountForm.type}
+																	onChange={(e) =>
+																		setAccountForm((prev) => ({
+																			...prev,
+																			type: e.target.value,
+																		}))
+																	}
+																	placeholder="Enter account type"
+																	required
+																/>
+															</div>
+															<div className="flex justify-end gap-2 pt-4">
+																<Button
+																	type="button"
+																	variant="outline"
+																	onClick={() => setCreateAccountOpen(false)}
+																	disabled={createAccountMutation.isPending}
+																>
+																	Cancel
+																</Button>
+																<Button
+																	type="submit"
+																	disabled={createAccountMutation.isPending}
+																>
+																	{createAccountMutation.isPending
+																		? "Creating..."
+																		: "Create"}
+																</Button>
+															</div>
+														</form>
+													</DialogContent>
+												</Dialog>
+											</div>
+											{accountsLoading ? (
+												<div className={cn("py-8 text-center")}>
+													<Loader />
+												</div>
+											) : accountsData?.accounts.length === 0 ? (
+												<p
+													className={cn(
+														"py-8 text-center text-muted-foreground",
+													)}
+												>
+													No accounts found for this user
+												</p>
+											) : (
+												<div className={cn("space-y-2")}>
+													{accountsData?.accounts.map((account) => (
+														<Card
+															key={account.id}
+															className={cn(
+																"cursor-pointer border-primary bg-transparent transition-colors hover:bg-accent/50",
+															)}
+															onClick={() => {
+																router.push(
+																	`/admin/transactions?userId=${user.id}&accountId=${account.id}` as Parameters<
+																		typeof router.push
+																	>[0],
+																);
+															}}
+														>
+															<CardHeader>
+																<CardTitle className={cn("text-lg")}>
+																	{account.name}
+																</CardTitle>
+															</CardHeader>
+															<Separator />
+															<CardFooter
+																className={cn(
+																	"flex items-center justify-between gap-4 text-sm",
+																)}
+															>
+																<div className={cn("flex flex-col gap-1")}>
+																	<span className={cn("text-gray-400 text-xs")}>
+																		Balance
+																	</span>
+																	<span className={cn("font-semibold")}>
+																		${account.balance || 0}
+																	</span>
+																</div>
+																<div className={cn("flex flex-col gap-1")}>
+																	<span className={cn("text-gray-400 text-xs")}>
+																		Total
+																	</span>
+																	<span className={cn("font-semibold")}>
+																		${account.total || 0}
+																	</span>
+																</div>
+															</CardFooter>
+														</Card>
+													))}
+												</div>
 											)}
-										</CardHeader>
-										<Separator />
-										<CardFooter
-											className={cn("flex-col items-stretch gap-2 text-xs")}
-										>
-											<p className={cn("space-x-2")}>
-												<span className={cn("text-gray-400")}>Email</span>
-												<span>{user.email}</span>
-											</p>
-											<p className={cn("space-x-2")}>
-												<span className={cn("text-gray-400")}>Created</span>
-												<span>
-													{user.createdAt
-														? new Date(user.createdAt).toLocaleDateString()
-														: "N/A"}
-												</span>
-											</p>
-										</CardFooter>
-									</Card>
+										</DialogContent>
+									</Dialog>
 								))}
 							</div>
 						</>

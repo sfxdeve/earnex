@@ -3,15 +3,17 @@ import z from "zod";
 import { protectedProcedure } from "..";
 
 export const bankRouter = {
-	getAccounts: protectedProcedure.handler(async ({ context }) => {
-		const accounts = await prisma.finAccount.findMany({
-			where: {
-				userId: context.session.user.id,
-			},
-		});
+	getAccounts: protectedProcedure
+		.input(z.object({ userId: z.string() }))
+		.handler(async ({ input }) => {
+			const accounts = await prisma.finAccount.findMany({
+				where: {
+					userId: input.userId,
+				},
+			});
 
-		return { accounts };
-	}),
+			return { accounts };
+		}),
 
 	getTransactions: protectedProcedure
 		.input(z.object({ accountId: z.string() }))
@@ -44,21 +46,18 @@ export const bankRouter = {
 		}),
 
 	createAccount: protectedProcedure
-		.input(z.object({ name: z.string(), type: z.string() }))
-		.handler(async ({ input, context }) => {
-			const account = await prisma.finAccount.create({
+		.input(z.object({ name: z.string(), type: z.string(), userId: z.string() }))
+		.handler(async ({ input }) => {
+			return await prisma.finAccount.create({
 				data: {
 					name: input.name,
 					type: input.type,
 					user: {
-						connect: { id: context.session.user.id },
+						connect: { id: input.userId },
 					},
 				},
 			});
-
-			return { account };
 		}),
-
 	deposit: protectedProcedure
 		.input(z.object({ accountId: z.string(), amount: z.number().positive() }))
 		.handler(async ({ input }) => {
