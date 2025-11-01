@@ -32,19 +32,23 @@ export default function DashboardPage() {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [newAccount, setNewAccount] = useState({
 		name: "",
+		type: "",
 	});
 
 	const { isPending: sessionPending, data: sessionData } =
 		authClient.useSession();
 	const { data: bankData, isLoading: bankLoading } = useQuery(
-		orpc.bank.getAccounts.queryOptions(),
+		orpc.bank.getAccounts.queryOptions({
+			input: { userId: sessionData?.user.id || "" },
+			enabled: !!sessionData?.user.id,
+		}),
 	);
 	const createAccountMutation = useMutation(
 		orpc.bank.createAccount.mutationOptions({
 			onSuccess: () => {
 				setIsDialogOpen(false);
 
-				setNewAccount({ name: "" });
+				setNewAccount({ name: "", type: "" });
 			},
 		}),
 	);
@@ -56,7 +60,15 @@ export default function DashboardPage() {
 	const handleCreateAccount = (e: React.FormEvent) => {
 		e.preventDefault();
 
-		createAccountMutation.mutate({ ...newAccount, type: "" });
+		createAccountMutation.mutate({
+			name: newAccount.name,
+			type: newAccount.type,
+			userId: sessionData?.user.id || "",
+		} as {
+			name: string;
+			type: string;
+			userId: string;
+		});
 	};
 
 	return (
@@ -87,6 +99,21 @@ export default function DashboardPage() {
 											}))
 										}
 										placeholder="Enter account name"
+										required
+									/>
+								</div>
+								<div className="space-y-2">
+									<Label htmlFor="accountType">Account Type</Label>
+									<Input
+										id="accountType"
+										value={newAccount.type}
+										onChange={(e) =>
+											setNewAccount((prev) => ({
+												...prev,
+												type: e.target.value,
+											}))
+										}
+										placeholder="Enter account type"
 										required
 									/>
 								</div>
