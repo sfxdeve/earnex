@@ -56,7 +56,6 @@ export default function WithdrawalPage() {
 							</CardFooter>
 						</Card>
 					</div>
-					<h3 className={cn("font-bold text-sm")}>My saved methods</h3>
 					<h3 className={cn("font-bold text-sm")}>All payment methods</h3>
 					<div
 						className={cn(

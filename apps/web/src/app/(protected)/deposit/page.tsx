@@ -26,7 +26,6 @@ export default function DepositPage() {
 				</div>
 				<Separator className={cn("mt-3 mb-6")} />
 				<div className={cn("space-y-8")}>
-					<h3 className={cn("text-sm")}>My saved methods</h3>
 					<h3 className={cn("text-sm")}>All payment methods</h3>
 					<div
 						className={cn(
