@@ -1,9 +1,11 @@
 "use client";
 
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -28,28 +30,11 @@ import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 
-interface UserFormData {
-	name: string;
-	email: string;
-	password?: string;
-	role?: string;
-}
-
 export default function AdminPage() {
 	const router = useRouter();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 	const [createAccountOpen, setCreateAccountOpen] = useState(false);
-	const [formData, setFormData] = useState<UserFormData>({
-		name: "",
-		email: "",
-		password: "",
-		role: "",
-	});
-	const [accountForm, setAccountForm] = useState({
-		name: "",
-		type: "",
-	});
 
 	const { isPending: sessionPending, data: sessionData } =
 		authClient.useSession();
@@ -69,19 +54,81 @@ export default function AdminPage() {
 		},
 	});
 
+	const userForm = useForm({
+		defaultValues: {
+			name: "",
+			email: "",
+			password: "",
+			role: "",
+		},
+		onSubmit: async ({ value }) => {
+			if (!value.password) {
+				toast.error("Password is required");
+				return;
+			}
+			await createUserMutation.mutateAsync({
+				name: value.name,
+				email: value.email,
+				password: value.password,
+				role: value.role || undefined,
+			});
+		},
+		validators: {
+			onSubmit: z.object({
+				name: z.string().min(2, "Name must be at least 2 characters"),
+				email: z.email("Invalid email address"),
+				password: z.string().min(8, "Password must be at least 8 characters"),
+				role: z.string(),
+			}),
+		},
+	});
+
+	const accountForm = useForm({
+		defaultValues: {
+			name: "",
+			type: "",
+		},
+		onSubmit: async ({ value }) => {
+			if (!selectedUserId) {
+				toast.error("User not selected");
+				return;
+			}
+			await createAccountMutation.mutateAsync({
+				name: value.name,
+				type: value.type,
+				userId: selectedUserId,
+			} as {
+				name: string;
+				type: string;
+				userId: string;
+			});
+		},
+		validators: {
+			onSubmit: z.object({
+				name: z.string().min(2, "Account name must be at least 2 characters"),
+				type: z.string().min(2, "Account type must be at least 2 characters"),
+			}),
+		},
+	});
+
 	const createUserMutation = useMutation({
-		mutationFn: async (data: UserFormData) => {
+		mutationFn: async (data: {
+			name: string;
+			email: string;
+			password: string;
+			role?: string;
+		}) => {
 			return await authClient.admin.createUser({
 				name: data.name,
 				email: data.email,
-				password: data.password as string,
+				password: data.password,
 				...(data.role && { role: data.role as "user" | "admin" }),
 			});
 		},
 		onSuccess: () => {
 			toast.success("User created successfully");
 			setIsDialogOpen(false);
-			resetForm();
+			userForm.reset();
 			refetchUsers();
 		},
 		onError: (error: Error) => {
@@ -105,7 +152,7 @@ export default function AdminPage() {
 			onSuccess: () => {
 				toast.success("Account created successfully");
 				setCreateAccountOpen(false);
-				setAccountForm({ name: "", type: "" });
+				accountForm.reset();
 				refetchAccounts();
 			},
 			onError: (error: Error) => {
@@ -113,19 +160,6 @@ export default function AdminPage() {
 			},
 		}),
 	);
-
-	const resetForm = () => {
-		setFormData({ name: "", email: "", password: "", role: "" });
-	};
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!formData.password) {
-			toast.error("Password is required");
-			return;
-		}
-		createUserMutation.mutate(formData);
-	};
 
 	if (sessionPending || usersLoading) {
 		return <Loader />;
@@ -143,7 +177,7 @@ export default function AdminPage() {
 						onOpenChange={(open) => {
 							setIsDialogOpen(open);
 							if (!open) {
-								resetForm();
+								userForm.reset();
 							}
 						}}
 					>
@@ -156,78 +190,139 @@ export default function AdminPage() {
 							<DialogHeader>
 								<DialogTitle>Create New User</DialogTitle>
 							</DialogHeader>
-							<form onSubmit={handleSubmit} className="space-y-4">
-								<div className="space-y-2">
-									<Label htmlFor="name">Name</Label>
-									<Input
-										id="name"
-										value={formData.name}
-										onChange={(e) =>
-											setFormData((prev) => ({ ...prev, name: e.target.value }))
-										}
-										placeholder="Enter user name"
-										required
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="email">Email</Label>
-									<Input
-										id="email"
-										type="email"
-										value={formData.email}
-										onChange={(e) =>
-											setFormData((prev) => ({
-												...prev,
-												email: e.target.value,
-											}))
-										}
-										placeholder="Enter user email"
-										required
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="password">Password</Label>
-									<Input
-										id="password"
-										type="password"
-										value={formData.password}
-										onChange={(e) =>
-											setFormData((prev) => ({
-												...prev,
-												password: e.target.value,
-											}))
-										}
-										placeholder="Enter password"
-										required
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="role">Role</Label>
-									<Input
-										id="role"
-										value={formData.role}
-										onChange={(e) =>
-											setFormData((prev) => ({ ...prev, role: e.target.value }))
-										}
-										placeholder="Enter user role (optional)"
-									/>
-								</div>
-								<div className="flex justify-end gap-2 pt-4">
-									<Button
-										type="button"
-										variant="outline"
-										onClick={() => {
-											setIsDialogOpen(false);
-											resetForm();
-										}}
-										disabled={createUserMutation.isPending}
-									>
-										Cancel
-									</Button>
-									<Button type="submit" disabled={createUserMutation.isPending}>
-										{createUserMutation.isPending ? "Creating..." : "Create"}
-									</Button>
-								</div>
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									userForm.handleSubmit();
+								}}
+								className="space-y-4"
+							>
+								<userForm.Field name="name">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor={field.name}>Name</Label>
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												placeholder="Enter user name"
+											/>
+											{field.state.meta.errors.map((error, index) => (
+												<p
+													key={`${field.name}-error-${index}`}
+													className="text-red-500 text-sm"
+												>
+													{String(error?.message || "Invalid value")}
+												</p>
+											))}
+										</div>
+									)}
+								</userForm.Field>
+								<userForm.Field name="email">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor={field.name}>Email</Label>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="email"
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												placeholder="Enter user email"
+											/>
+											{field.state.meta.errors.map((error, index) => (
+												<p
+													key={`${field.name}-error-${index}`}
+													className="text-red-500 text-sm"
+												>
+													{String(error?.message || "Invalid value")}
+												</p>
+											))}
+										</div>
+									)}
+								</userForm.Field>
+								<userForm.Field name="password">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor={field.name}>Password</Label>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="password"
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												placeholder="Enter password"
+											/>
+											{field.state.meta.errors.map((error, index) => (
+												<p
+													key={`${field.name}-error-${index}`}
+													className="text-red-500 text-sm"
+												>
+													{String(error?.message || "Invalid value")}
+												</p>
+											))}
+										</div>
+									)}
+								</userForm.Field>
+								<userForm.Field name="role">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor={field.name}>Role</Label>
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												placeholder="Enter user role (optional)"
+											/>
+											{field.state.meta.errors.map((error, index) => (
+												<p
+													key={`${field.name}-error-${index}`}
+													className="text-red-500 text-sm"
+												>
+													{String(error?.message || "Invalid value")}
+												</p>
+											))}
+										</div>
+									)}
+								</userForm.Field>
+								<userForm.Subscribe>
+									{(state) => (
+										<div className="flex justify-end gap-2 pt-4">
+											<Button
+												type="button"
+												variant="outline"
+												onClick={() => {
+													setIsDialogOpen(false);
+													userForm.reset();
+												}}
+												disabled={
+													state.isSubmitting || createUserMutation.isPending
+												}
+											>
+												Cancel
+											</Button>
+											<Button
+												type="submit"
+												disabled={
+													!state.canSubmit ||
+													state.isSubmitting ||
+													createUserMutation.isPending
+												}
+											>
+												{state.isSubmitting || createUserMutation.isPending
+													? "Creating..."
+													: "Create"}
+											</Button>
+										</div>
+									)}
+								</userForm.Subscribe>
 							</form>
 						</DialogContent>
 					</Dialog>
@@ -301,7 +396,7 @@ export default function AdminPage() {
 													open={createAccountOpen}
 													onOpenChange={(open) => {
 														setCreateAccountOpen(open);
-														if (!open) setAccountForm({ name: "", type: "" });
+														if (!open) accountForm.reset();
 													}}
 												>
 													<DialogTrigger asChild>
@@ -316,78 +411,97 @@ export default function AdminPage() {
 														<form
 															onSubmit={(e) => {
 																e.preventDefault();
-																if (!accountForm.name || !accountForm.type) {
-																	toast.error("Name and type are required");
-																	return;
-																}
-																if (!selectedUserId) {
-																	toast.error("User not selected");
-																	return;
-																}
-																createAccountMutation.mutate({
-																	name: accountForm.name,
-																	type: accountForm.type,
-																	userId: selectedUserId,
-																} as {
-																	name: string;
-																	type: string;
-																	userId: string;
-																});
+																e.stopPropagation();
+																accountForm.handleSubmit();
 															}}
 															className="space-y-4"
 														>
-															<div className="space-y-2">
-																<Label htmlFor="account-name">
-																	Account Name
-																</Label>
-																<Input
-																	id="account-name"
-																	value={accountForm.name}
-																	onChange={(e) =>
-																		setAccountForm((prev) => ({
-																			...prev,
-																			name: e.target.value,
-																		}))
-																	}
-																	placeholder="Enter account name"
-																	required
-																/>
-															</div>
-															<div className="space-y-2">
-																<Label htmlFor="account-type">
-																	Account Type
-																</Label>
-																<Input
-																	id="account-type"
-																	value={accountForm.type}
-																	onChange={(e) =>
-																		setAccountForm((prev) => ({
-																			...prev,
-																			type: e.target.value,
-																		}))
-																	}
-																	placeholder="Enter account type"
-																	required
-																/>
-															</div>
-															<div className="flex justify-end gap-2 pt-4">
-																<Button
-																	type="button"
-																	variant="outline"
-																	onClick={() => setCreateAccountOpen(false)}
-																	disabled={createAccountMutation.isPending}
-																>
-																	Cancel
-																</Button>
-																<Button
-																	type="submit"
-																	disabled={createAccountMutation.isPending}
-																>
-																	{createAccountMutation.isPending
-																		? "Creating..."
-																		: "Create"}
-																</Button>
-															</div>
+															<accountForm.Field name="name">
+																{(field) => (
+																	<div className="space-y-2">
+																		<Label htmlFor={field.name}>
+																			Account Name
+																		</Label>
+																		<Input
+																			id={field.name}
+																			name={field.name}
+																			value={field.state.value}
+																			onBlur={field.handleBlur}
+																			onChange={(e) =>
+																				field.handleChange(e.target.value)
+																			}
+																			placeholder="Enter account name"
+																		/>
+																		{field.state.meta.errors.map((error) => (
+																			<p
+																				key={error?.message}
+																				className="text-red-500 text-sm"
+																			>
+																				{error?.message}
+																			</p>
+																		))}
+																	</div>
+																)}
+															</accountForm.Field>
+															<accountForm.Field name="type">
+																{(field) => (
+																	<div className="space-y-2">
+																		<Label htmlFor={field.name}>
+																			Account Type
+																		</Label>
+																		<Input
+																			id={field.name}
+																			name={field.name}
+																			value={field.state.value}
+																			onBlur={field.handleBlur}
+																			onChange={(e) =>
+																				field.handleChange(e.target.value)
+																			}
+																			placeholder="Enter account type"
+																		/>
+																		{field.state.meta.errors.map((error) => (
+																			<p
+																				key={error?.message}
+																				className="text-red-500 text-sm"
+																			>
+																				{error?.message}
+																			</p>
+																		))}
+																	</div>
+																)}
+															</accountForm.Field>
+															<accountForm.Subscribe>
+																{(state) => (
+																	<div className="flex justify-end gap-2 pt-4">
+																		<Button
+																			type="button"
+																			variant="outline"
+																			onClick={() =>
+																				setCreateAccountOpen(false)
+																			}
+																			disabled={
+																				state.isSubmitting ||
+																				createAccountMutation.isPending
+																			}
+																		>
+																			Cancel
+																		</Button>
+																		<Button
+																			type="submit"
+																			disabled={
+																				!state.canSubmit ||
+																				state.isSubmitting ||
+																				createAccountMutation.isPending
+																			}
+																		>
+																			{state.isSubmitting ||
+																			createAccountMutation.isPending
+																				? "Creating..."
+																				: "Create"}
+																		</Button>
+																	</div>
+																)}
+															</accountForm.Subscribe>
 														</form>
 													</DialogContent>
 												</Dialog>

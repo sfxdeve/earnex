@@ -1,8 +1,11 @@
 "use client";
 
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
+import { z } from "zod";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
 	Dialog,
@@ -30,10 +33,6 @@ import { orpc } from "@/utils/orpc";
 
 export default function DashboardPage() {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
-	const [newAccount, setNewAccount] = useState({
-		name: "",
-		type: "",
-	});
 
 	const { isPending: sessionPending, data: sessionData } =
 		authClient.useSession();
@@ -51,30 +50,47 @@ export default function DashboardPage() {
 		orpc.bank.createAccount.mutationOptions({
 			onSuccess: () => {
 				setIsDialogOpen(false);
-
-				setNewAccount({ name: "", type: "" });
+				form.reset();
 				refetchAccounts();
+				toast.success("Account created successfully");
+			},
+			onError: (error: Error) => {
+				toast.error(error?.message || "Failed to create account");
 			},
 		}),
 	);
 
+	const form = useForm({
+		defaultValues: {
+			name: "",
+			type: "",
+		},
+		onSubmit: async ({ value }) => {
+			if (!sessionData?.user.id) {
+				toast.error("User not authenticated");
+				return;
+			}
+			createAccountMutation.mutate({
+				name: value.name,
+				type: value.type,
+				userId: sessionData.user.id,
+			} as {
+				name: string;
+				type: string;
+				userId: string;
+			});
+		},
+		validators: {
+			onSubmit: z.object({
+				name: z.string().min(2, "Account name must be at least 2 characters"),
+				type: z.string().min(2, "Account type must be at least 2 characters"),
+			}),
+		},
+	});
+
 	if (sessionPending || bankLoading) {
 		return <Loader />;
 	}
-
-	const handleCreateAccount = (e: React.FormEvent) => {
-		e.preventDefault();
-
-		createAccountMutation.mutate({
-			name: newAccount.name,
-			type: newAccount.type,
-			userId: sessionData?.user.id || "",
-		} as {
-			name: string;
-			type: string;
-			userId: string;
-		});
-	};
 
 	return (
 		<div className={cn("flex flex-1 flex-col justify-between")}>
@@ -91,47 +107,78 @@ export default function DashboardPage() {
 							<DialogHeader>
 								<DialogTitle>Create New Account</DialogTitle>
 							</DialogHeader>
-							<form onSubmit={handleCreateAccount} className="space-y-4">
-								<div className="space-y-2">
-									<Label htmlFor="accountName">Account Name</Label>
-									<Input
-										id="accountName"
-										value={newAccount.name}
-										onChange={(e) =>
-											setNewAccount((prev) => ({
-												...prev,
-												name: e.target.value,
-											}))
-										}
-										placeholder="Enter account name"
-										required
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="accountType">Account Type</Label>
-									<Input
-										id="accountType"
-										value={newAccount.type}
-										onChange={(e) =>
-											setNewAccount((prev) => ({
-												...prev,
-												type: e.target.value,
-											}))
-										}
-										placeholder="Enter account type"
-										required
-									/>
-								</div>
-								<div className="flex justify-end">
-									<Button
-										type="submit"
-										disabled={createAccountMutation.isPending}
-									>
-										{createAccountMutation.isPending
-											? "Creating..."
-											: "Create Account"}
-									</Button>
-								</div>
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									form.handleSubmit();
+								}}
+								className="space-y-4"
+							>
+								<form.Field name="name">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor={field.name}>Account Name</Label>
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												placeholder="Enter account name"
+											/>
+											{field.state.meta.errors.map((error, index) => (
+												<p
+													key={`${field.name}-error-${index}`}
+													className="text-red-500 text-sm"
+												>
+													{String(error?.message || "Invalid value")}
+												</p>
+											))}
+										</div>
+									)}
+								</form.Field>
+								<form.Field name="type">
+									{(field) => (
+										<div className="space-y-2">
+											<Label htmlFor={field.name}>Account Type</Label>
+											<Input
+												id={field.name}
+												name={field.name}
+												value={field.state.value}
+												onBlur={field.handleBlur}
+												onChange={(e) => field.handleChange(e.target.value)}
+												placeholder="Enter account type"
+											/>
+											{field.state.meta.errors.map((error, index) => (
+												<p
+													key={`${field.name}-error-${index}`}
+													className="text-red-500 text-sm"
+												>
+													{String(error?.message || "Invalid value")}
+												</p>
+											))}
+										</div>
+									)}
+								</form.Field>
+								<form.Subscribe>
+									{(state) => (
+										<div className="flex justify-end">
+											<Button
+												type="submit"
+												disabled={
+													!state.canSubmit ||
+													state.isSubmitting ||
+													createAccountMutation.isPending
+												}
+											>
+												{state.isSubmitting || createAccountMutation.isPending
+													? "Creating..."
+													: "Create Account"}
+											</Button>
+										</div>
+									)}
+								</form.Subscribe>
 							</form>
 						</DialogContent>
 					</Dialog>

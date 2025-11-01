@@ -9,15 +9,16 @@ export const auth = betterAuth<BetterAuthOptions>({
 		provider: "mongodb",
 	}),
 	trustedOrigins: [process.env.CORS_ORIGIN || ""],
-	emailAndPassword: {
-		enabled: true,
-	},
 	advanced: {
 		defaultCookieAttributes: {
 			sameSite: "none",
 			secure: true,
 			httpOnly: true,
 		},
+	},
+	emailAndPassword: {
+		enabled: true,
+		requireEmailVerification: true,
 	},
 	emailVerification: {
 		sendVerificationEmail: async ({ user, url }) => {
