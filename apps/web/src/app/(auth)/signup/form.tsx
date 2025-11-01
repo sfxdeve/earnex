@@ -60,13 +60,16 @@ export function SignUpForm() {
 				e.stopPropagation();
 				form.handleSubmit();
 			}}
-			className="space-y-12"
+			className="space-y-6 lg:space-y-12"
 		>
 			<div>
 				<form.Field name="email">
 					{(field) => (
 						<div className="space-y-2">
-							<Label htmlFor={field.name} className={cn("text-2xl text-white")}>
+							<Label
+								htmlFor={field.name}
+								className={cn("text-lg text-white lg:text-2xl")}
+							>
 								Email
 							</Label>
 							<Input
@@ -95,7 +98,10 @@ export function SignUpForm() {
 				<form.Field name="password">
 					{(field) => (
 						<div className="space-y-2">
-							<Label htmlFor={field.name} className={cn("text-2xl text-white")}>
+							<Label
+								htmlFor={field.name}
+								className={cn("text-lg text-white lg:text-2xl")}
+							>
 								Password
 							</Label>
 							<Input
@@ -124,7 +130,10 @@ export function SignUpForm() {
 				<form.Field name="country">
 					{(field) => (
 						<div className="space-y-2">
-							<Label htmlFor={field.name} className={cn("text-2xl text-white")}>
+							<Label
+								htmlFor={field.name}
+								className={cn("text-lg text-white lg:text-2xl")}
+							>
 								Country
 							</Label>
 							<Input

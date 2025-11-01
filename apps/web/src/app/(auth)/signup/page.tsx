@@ -17,7 +17,7 @@ export default function SignUpPage() {
 					src={assets.pattern.src}
 					alt={assets.pattern.alt}
 					className={cn(
-						"-z-50 absolute inset-0 size-full rotate-180 object-fill",
+						"-z-50 absolute inset-0 size-full rotate-180 object-cover",
 					)}
 				/>
 
@@ -30,7 +30,7 @@ export default function SignUpPage() {
 					<div className={cn("flex flex-1 flex-col justify-between gap-6")}>
 						{/* Brand */}
 						<div>
-							<h1 className={cn("font-bold text-xl sm:text-2xl lg:text-3xl")}>
+							<h1 className={cn("font-bold text-2xl lg:text-3xl")}>
 								{content.brand}
 							</h1>
 						</div>
@@ -61,7 +61,7 @@ export default function SignUpPage() {
 						</div>
 
 						{/* Footer */}
-						<div>
+						<div className={cn("hidden lg:block")}>
 							<p className={cn("text-sm sm:text-base lg:text-lg")}>
 								{content.footer.text}
 							</p>
@@ -70,7 +70,7 @@ export default function SignUpPage() {
 
 					{/* Right Section */}
 					<div className={cn("flex flex-1 flex-col justify-between gap-6")}>
-						<div className={cn("space-y-4")}>
+						<div className={cn("hidden space-y-4 lg:block")}>
 							<h3 className={cn("font-bold text-lg tracking-wide sm:text-xl")}>
 								{content.form.heading}
 							</h3>
