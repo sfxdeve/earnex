@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { PropsWithChildren } from "react";
 import { useEffect } from "react";
 import { Loader } from "@/components/ui/loader";
@@ -11,13 +11,31 @@ import { Header } from "./_components/header";
 
 export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
 	const router = useRouter();
+	const pathname = usePathname();
+
 	const { data: session, isPending } = authClient.useSession();
 
 	useEffect(() => {
 		if (!isPending && !session?.user) {
 			router.push(routes.auth.signIn);
 		}
-	}, [session, isPending, router]);
+
+		if (
+			!isPending &&
+			session?.user.role === "admin" &&
+			!pathname.startsWith(routes.protected.admin.index)
+		) {
+			router.push(routes.protected.admin.index);
+		}
+
+		if (
+			!isPending &&
+			session?.user.role !== "admin" &&
+			pathname.startsWith(routes.protected.admin.index)
+		) {
+			router.push(routes.protected.dashboard);
+		}
+	}, [session, isPending, router, pathname]);
 
 	if (isPending) {
 		return (
