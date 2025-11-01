@@ -118,11 +118,16 @@ export default function AdminPage() {
 			password: string;
 			role?: string;
 		}) => {
-			return await authClient.admin.createUser({
+			await authClient.admin.createUser({
 				name: data.name,
 				email: data.email,
 				password: data.password,
-				...(data.role && { role: data.role as "user" | "admin" }),
+				role: data.role as "user" | "admin",
+			});
+
+			await authClient.sendVerificationEmail({
+				email: data.email,
+				callbackURL: routes.protected.dashboard,
 			});
 		},
 		onSuccess: () => {
