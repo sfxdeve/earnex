@@ -130,6 +130,9 @@ export const bankRouter = {
 					id: input.accountId,
 				},
 				data: {
+					total: {
+						decrement: input.amount,
+					},
 					balance: {
 						decrement: input.amount,
 					},

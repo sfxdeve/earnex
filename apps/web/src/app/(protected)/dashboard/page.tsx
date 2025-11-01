@@ -37,7 +37,11 @@ export default function DashboardPage() {
 
 	const { isPending: sessionPending, data: sessionData } =
 		authClient.useSession();
-	const { data: bankData, isLoading: bankLoading } = useQuery(
+	const {
+		data: bankData,
+		isLoading: bankLoading,
+		refetch: refetchAccounts,
+	} = useQuery(
 		orpc.bank.getAccounts.queryOptions({
 			input: { userId: sessionData?.user.id || "" },
 			enabled: !!sessionData?.user.id,
@@ -49,6 +53,7 @@ export default function DashboardPage() {
 				setIsDialogOpen(false);
 
 				setNewAccount({ name: "", type: "" });
+				refetchAccounts();
 			},
 		}),
 	);

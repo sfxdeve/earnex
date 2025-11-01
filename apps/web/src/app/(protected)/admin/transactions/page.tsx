@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
@@ -36,7 +37,6 @@ export default function AdminTransactionsPage() {
 		amount: "",
 	});
 
-	const queryClient = useQueryClient();
 	const { isPending: sessionPending, data: sessionData } =
 		authClient.useSession();
 
@@ -49,7 +49,7 @@ export default function AdminTransactionsPage() {
 	}, [searchParams]);
 
 	// Fetch accounts for selected user
-	const { data: accountsData } = useQuery(
+	const { data: accountsData, refetch: refetchAccounts } = useQuery(
 		orpc.bank.getAccounts.queryOptions({
 			input: { userId: selectedUserId },
 			enabled: !!selectedUserId,
@@ -57,7 +57,11 @@ export default function AdminTransactionsPage() {
 	);
 
 	// Fetch transactions for selected account
-	const { data: transactionsData, isLoading: transactionsLoading } = useQuery(
+	const {
+		data: transactionsData,
+		isLoading: transactionsLoading,
+		refetch: refetchTransactions,
+	} = useQuery(
 		orpc.bank.getTransactions.queryOptions({
 			input: { accountId: selectedAccountId },
 			enabled: !!selectedAccountId,
@@ -65,7 +69,11 @@ export default function AdminTransactionsPage() {
 	);
 
 	// Fetch investments for selected account
-	const { data: investmentsData, isLoading: investmentsLoading } = useQuery(
+	const {
+		data: investmentsData,
+		isLoading: investmentsLoading,
+		refetch: refetchInvestments,
+	} = useQuery(
 		orpc.bank.getInvestments.queryOptions({
 			input: { accountId: selectedAccountId },
 			enabled: !!selectedAccountId,
@@ -79,12 +87,8 @@ export default function AdminTransactionsPage() {
 				toast.success("Deposit successful");
 				setDepositOpen(false);
 				setDepositForm({ amount: "" });
-				queryClient.invalidateQueries({
-					queryKey: ["bank", "getAccounts"],
-				});
-				queryClient.invalidateQueries({
-					queryKey: ["bank", "getTransactions"],
-				});
+				refetchAccounts();
+				refetchTransactions();
 			},
 			onError: (error: Error) => {
 				toast.error(error?.message || "Failed to deposit");
@@ -98,12 +102,8 @@ export default function AdminTransactionsPage() {
 				toast.success("Withdrawal successful");
 				setWithdrawOpen(false);
 				setWithdrawForm({ amount: "" });
-				queryClient.invalidateQueries({
-					queryKey: ["bank", "getAccounts"],
-				});
-				queryClient.invalidateQueries({
-					queryKey: ["bank", "getTransactions"],
-				});
+				refetchAccounts();
+				refetchTransactions();
 			},
 			onError: (error: Error) => {
 				toast.error(error?.message || "Failed to withdraw");
@@ -117,12 +117,8 @@ export default function AdminTransactionsPage() {
 				toast.success("Investment created successfully");
 				setCreateInvestmentOpen(false);
 				setInvestmentForm({ name: "", amount: "" });
-				queryClient.invalidateQueries({
-					queryKey: ["bank", "getAccounts"],
-				});
-				queryClient.invalidateQueries({
-					queryKey: ["bank", "getInvestments"],
-				});
+				refetchAccounts();
+				refetchInvestments();
 			},
 			onError: (error: Error) => {
 				toast.error(error?.message || "Failed to create investment");
@@ -134,12 +130,8 @@ export default function AdminTransactionsPage() {
 		orpc.bank.withdrawInvestment.mutationOptions({
 			onSuccess: () => {
 				toast.success("Investment withdrawn successfully");
-				queryClient.invalidateQueries({
-					queryKey: ["bank", "getAccounts"],
-				});
-				queryClient.invalidateQueries({
-					queryKey: ["bank", "getInvestments"],
-				});
+				refetchAccounts();
+				refetchInvestments();
 			},
 			onError: (error: Error) => {
 				toast.error(error?.message || "Failed to withdraw investment");
@@ -441,9 +433,13 @@ export default function AdminTransactionsPage() {
 
 					{/* Display Transactions & Investments */}
 					{selectedAccountId && (
-						<>
-							<div className={cn("space-y-4")}>
-								<h3 className={cn("font-semibold text-xl")}>Transactions</h3>
+						<Tabs defaultValue="transactions" className={cn("w-full")}>
+							<TabsList>
+								<TabsTrigger value="transactions">Transactions</TabsTrigger>
+								<TabsTrigger value="investments">Investments</TabsTrigger>
+							</TabsList>
+
+							<TabsContent value="transactions" className={cn("mt-4")}>
 								{transactionsLoading ? (
 									<p className={cn("text-muted-foreground text-sm")}>
 										Loading transactions...
@@ -495,11 +491,9 @@ export default function AdminTransactionsPage() {
 										))}
 									</div>
 								)}
-							</div>
+							</TabsContent>
 
-							{/* Display Investments */}
-							<div className={cn("space-y-4")}>
-								<h3 className={cn("font-semibold text-xl")}>Investments</h3>
+							<TabsContent value="investments" className={cn("mt-4")}>
 								{investmentsLoading ? (
 									<p className={cn("text-muted-foreground text-sm")}>
 										Loading investments...
@@ -574,8 +568,8 @@ export default function AdminTransactionsPage() {
 										))}
 									</div>
 								)}
-							</div>
-						</>
+							</TabsContent>
+						</Tabs>
 					)}
 				</div>
 			</div>
