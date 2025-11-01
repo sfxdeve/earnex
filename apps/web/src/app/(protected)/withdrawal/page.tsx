@@ -17,7 +17,7 @@ export default function WithdrawalPage() {
 	}
 
 	return (
-		<div className={cn("flex flex-1 flex-col justify-between")}>
+		<div className={cn("flex flex-1 flex-col justify-between gap-4")}>
 			<div>
 				<div className={cn("flex items-center justify-between")}>
 					<h2 className={cn("font-bold text-3xl")}>Withdrawal</h2>
@@ -35,7 +35,11 @@ export default function WithdrawalPage() {
 							options.
 						</p>
 					</div>
-					<div className={cn("grid grid-cols-3 gap-6 lg:grid-cols-4")}>
+					<div
+						className={cn(
+							"grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4",
+						)}
+					>
 						<Card className={cn("gap-4 border-primary bg-primary")}>
 							<CardHeader>
 								<CardTitle>
@@ -54,7 +58,11 @@ export default function WithdrawalPage() {
 					</div>
 					<h3 className={cn("font-bold text-sm")}>My saved methods</h3>
 					<h3 className={cn("font-bold text-sm")}>All payment methods</h3>
-					<div className={cn("grid grid-cols-3 gap-6 lg:grid-cols-4")}>
+					<div
+						className={cn(
+							"grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4",
+						)}
+					>
 						<MethodCard
 							name="BinancePay"
 							icon={{

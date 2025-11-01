@@ -38,14 +38,6 @@ export function Header() {
 					>
 						<Link href={routes.protected.withdrawal}>Withdrawal</Link>
 					</li>
-					<li
-						className={cn(
-							"font-medium text-gray-700 text-lg",
-							pathname === routes.protected.analytics && "text-foreground",
-						)}
-					>
-						<Link href={routes.protected.analytics}>Analytics</Link>
-					</li>
 				</ul>
 			</nav>
 			<Input className={cn("w-56 rounded-full")} placeholder="Search" />

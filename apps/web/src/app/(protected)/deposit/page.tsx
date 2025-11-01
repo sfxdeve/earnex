@@ -16,7 +16,7 @@ export default function DepositPage() {
 	}
 
 	return (
-		<div className={cn("flex flex-1 flex-col justify-between")}>
+		<div className={cn("flex flex-1 flex-col justify-between gap-4")}>
 			<div>
 				<div className={cn("flex items-center justify-between")}>
 					<h2 className={cn("font-bold text-3xl")}>Deposit</h2>
@@ -28,7 +28,11 @@ export default function DepositPage() {
 				<div className={cn("space-y-8")}>
 					<h3 className={cn("text-sm")}>My saved methods</h3>
 					<h3 className={cn("text-sm")}>All payment methods</h3>
-					<div className={cn("grid grid-cols-3 gap-6 lg:grid-cols-4")}>
+					<div
+						className={cn(
+							"grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4",
+						)}
+					>
 						<MethodCard
 							name="BinancePay"
 							icon={{
