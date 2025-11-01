@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { assets } from "@/assets";
-import { Button } from "@/components/ui/button";
+import { NativeButton } from "@/components/ui/native-button";
 import {
 	Dialog,
 	DialogContent,
@@ -96,13 +96,13 @@ export default function DepositPage() {
 					<h2 className={cn("font-bold text-2xl sm:text-3xl")}>Deposit</h2>
 					<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 						<DialogTrigger asChild>
-							<Button
+							<NativeButton
 								variant="outline"
 								size="lg"
 								className={cn("w-full sm:w-auto")}
 							>
 								Open New Account
-							</Button>
+							</NativeButton>
 						</DialogTrigger>
 						<DialogContent>
 							<DialogHeader>
@@ -165,7 +165,7 @@ export default function DepositPage() {
 								<form.Subscribe>
 									{(state) => (
 										<div className="flex justify-end">
-											<Button
+											<NativeButton
 												type="submit"
 												disabled={
 													!state.canSubmit ||
@@ -176,7 +176,7 @@ export default function DepositPage() {
 												{state.isSubmitting || createAccountMutation.isPending
 													? "Creating..."
 													: "Create Account"}
-											</Button>
+											</NativeButton>
 										</div>
 									)}
 								</form.Subscribe>

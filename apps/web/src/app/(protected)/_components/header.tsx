@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { NativeButton } from "@/components/ui/native-button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -87,15 +87,15 @@ export function Header() {
 					/>
 				</div>
 
-				{/* Notification Button */}
-				<Button variant="ghost" size="icon" className={cn("relative")}>
+				{/* Notification NativeButton */}
+				<NativeButton variant="ghost" size="icon" className={cn("relative")}>
 					<Bell className={cn("size-5")} />
 					<span
 						className={cn(
 							"absolute top-1 right-1 size-2 rounded-full bg-blue-500",
 						)}
 					/>
-				</Button>
+				</NativeButton>
 
 				{/* User Role - Hidden on small screens */}
 				<span className={cn("hidden font-medium text-sm uppercase sm:inline")}>
@@ -106,7 +106,7 @@ export function Header() {
 				{session?.user && (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<Button
+							<NativeButton
 								variant="ghost"
 								className={cn("flex h-auto items-center gap-2 p-0")}
 							>
@@ -133,7 +133,7 @@ export function Header() {
 									)}
 								</div>
 								<ChevronDown className={cn("hidden size-4 sm:block")} />
-							</Button>
+							</NativeButton>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuItem
@@ -146,12 +146,16 @@ export function Header() {
 					</DropdownMenu>
 				)}
 
-				{/* Mobile Menu Button */}
+				{/* Mobile Menu NativeButton */}
 				<Sheet>
 					<SheetTrigger asChild>
-						<Button variant="ghost" size="icon" className={cn("lg:hidden")}>
+						<NativeButton
+							variant="ghost"
+							size="icon"
+							className={cn("lg:hidden")}
+						>
 							<Menu className={cn("size-5")} />
-						</Button>
+						</NativeButton>
 					</SheetTrigger>
 					<SheetContent side="left" className={cn("w-[300px] sm:w-[400px]")}>
 						<div className={cn("flex flex-col gap-6 px-4 pt-12")}>
@@ -214,14 +218,14 @@ export function Header() {
 							)}
 
 							{/* Mobile User Info */}
-							<Button
+							<NativeButton
 								variant="outline"
 								size="sm"
 								onClick={handleSignOut}
 								className={cn("w-full cursor-pointer")}
 							>
 								Sign Out
-							</Button>
+							</NativeButton>
 						</div>
 					</SheetContent>
 				</Sheet>

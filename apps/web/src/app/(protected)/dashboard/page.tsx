@@ -6,7 +6,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button, buttonVariants } from "@/components/ui/button";
+import {
+	NativeButton,
+	nativeNativeButtonVariants,
+} from "@/components/ui/native-button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
@@ -131,13 +134,13 @@ export default function DashboardPage() {
 					<h2 className={cn("font-bold text-2xl sm:text-3xl")}>My Accounts</h2>
 					<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 						<DialogTrigger asChild>
-							<Button
+							<NativeButton
 								variant="outline"
 								size="lg"
 								className={cn("w-full sm:w-auto")}
 							>
 								Open New Account
-							</Button>
+							</NativeButton>
 						</DialogTrigger>
 						<DialogContent>
 							<DialogHeader>
@@ -200,7 +203,7 @@ export default function DashboardPage() {
 								<form.Subscribe>
 									{(state) => (
 										<div className="flex justify-end">
-											<Button
+											<NativeButton
 												type="submit"
 												disabled={
 													!state.canSubmit ||
@@ -211,7 +214,7 @@ export default function DashboardPage() {
 												{state.isSubmitting || createAccountMutation.isPending
 													? "Creating..."
 													: "Create Account"}
-											</Button>
+											</NativeButton>
 										</div>
 									)}
 								</form.Subscribe>
@@ -282,7 +285,7 @@ export default function DashboardPage() {
 							<li>
 								<Link
 									className={cn(
-										buttonVariants({
+										nativeNativeButtonVariants({
 											variant: "outline",
 											className: "w-full px-6 sm:w-auto sm:px-8",
 										}),
@@ -295,7 +298,7 @@ export default function DashboardPage() {
 							<li>
 								<Link
 									className={cn(
-										buttonVariants({
+										nativeNativeButtonVariants({
 											variant: "outline",
 											className: "w-full px-6 sm:w-auto sm:px-8",
 										}),
@@ -308,7 +311,7 @@ export default function DashboardPage() {
 							<li>
 								<Link
 									className={cn(
-										buttonVariants({
+										nativeNativeButtonVariants({
 											variant: "default",
 											className: "w-full px-6 sm:w-auto sm:px-8",
 										}),

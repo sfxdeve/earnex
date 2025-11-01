@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { assets } from "@/assets";
-import { Button } from "@/components/ui/button";
+import { NativeButton } from "@/components/ui/native-button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
@@ -97,13 +97,13 @@ export default function WithdrawalPage() {
 					<h2 className={cn("font-bold text-2xl sm:text-3xl")}>Withdrawal</h2>
 					<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 						<DialogTrigger asChild>
-							<Button
+							<NativeButton
 								variant="outline"
 								size="lg"
 								className={cn("w-full sm:w-auto")}
 							>
 								Open New Account
-							</Button>
+							</NativeButton>
 						</DialogTrigger>
 						<DialogContent>
 							<DialogHeader>
@@ -166,7 +166,7 @@ export default function WithdrawalPage() {
 								<form.Subscribe>
 									{(state) => (
 										<div className="flex justify-end">
-											<Button
+											<NativeButton
 												type="submit"
 												disabled={
 													!state.canSubmit ||
@@ -177,7 +177,7 @@ export default function WithdrawalPage() {
 												{state.isSubmitting || createAccountMutation.isPending
 													? "Creating..."
 													: "Create Account"}
-											</Button>
+											</NativeButton>
 										</div>
 									)}
 								</form.Subscribe>

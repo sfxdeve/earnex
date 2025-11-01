@@ -3,7 +3,7 @@
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { NativeButton } from "@/components/ui/native-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
@@ -154,13 +154,13 @@ export function SignUpForm() {
 
 			<form.Subscribe>
 				{(state) => (
-					<Button
+					<NativeButton
 						type="submit"
 						className="w-full rounded-full py-8"
 						disabled={!state.canSubmit || state.isSubmitting}
 					>
 						{state.isSubmitting ? "Creating Account..." : "Create Account"}
-					</Button>
+					</NativeButton>
 				)}
 			</form.Subscribe>
 		</form>

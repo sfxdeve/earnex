@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { NativeButton } from "@/components/ui/native-button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
@@ -211,9 +211,9 @@ export default function AdminTransactionsPage() {
 									}}
 								>
 									<DialogTrigger asChild>
-										<Button variant="outline" className={cn("w-full")}>
+										<NativeButton variant="outline" className={cn("w-full")}>
 											Deposit
-										</Button>
+										</NativeButton>
 									</DialogTrigger>
 									<DialogContent>
 										<DialogHeader>
@@ -250,22 +250,22 @@ export default function AdminTransactionsPage() {
 												/>
 											</div>
 											<div className="flex justify-end gap-2 pt-4">
-												<Button
+												<NativeButton
 													type="button"
 													variant="outline"
 													onClick={() => setDepositOpen(false)}
 													disabled={depositMutation.isPending}
 												>
 													Cancel
-												</Button>
-												<Button
+												</NativeButton>
+												<NativeButton
 													type="submit"
 													disabled={depositMutation.isPending}
 												>
 													{depositMutation.isPending
 														? "Processing..."
 														: "Deposit"}
-												</Button>
+												</NativeButton>
 											</div>
 										</form>
 									</DialogContent>
@@ -278,9 +278,9 @@ export default function AdminTransactionsPage() {
 									}}
 								>
 									<DialogTrigger asChild>
-										<Button variant="outline" className={cn("w-full")}>
+										<NativeButton variant="outline" className={cn("w-full")}>
 											Withdraw
-										</Button>
+										</NativeButton>
 									</DialogTrigger>
 									<DialogContent>
 										<DialogHeader>
@@ -317,22 +317,22 @@ export default function AdminTransactionsPage() {
 												/>
 											</div>
 											<div className="flex justify-end gap-2 pt-4">
-												<Button
+												<NativeButton
 													type="button"
 													variant="outline"
 													onClick={() => setWithdrawOpen(false)}
 													disabled={withdrawMutation.isPending}
 												>
 													Cancel
-												</Button>
-												<Button
+												</NativeButton>
+												<NativeButton
 													type="submit"
 													disabled={withdrawMutation.isPending}
 												>
 													{withdrawMutation.isPending
 														? "Processing..."
 														: "Withdraw"}
-												</Button>
+												</NativeButton>
 											</div>
 										</form>
 									</DialogContent>
@@ -345,9 +345,9 @@ export default function AdminTransactionsPage() {
 									}}
 								>
 									<DialogTrigger asChild>
-										<Button variant="outline" className={cn("w-full")}>
+										<NativeButton variant="outline" className={cn("w-full")}>
 											Invest
-										</Button>
+										</NativeButton>
 									</DialogTrigger>
 									<DialogContent>
 										<DialogHeader>
@@ -407,22 +407,22 @@ export default function AdminTransactionsPage() {
 												/>
 											</div>
 											<div className="flex justify-end gap-2 pt-4">
-												<Button
+												<NativeButton
 													type="button"
 													variant="outline"
 													onClick={() => setCreateInvestmentOpen(false)}
 													disabled={createInvestmentMutation.isPending}
 												>
 													Cancel
-												</Button>
-												<Button
+												</NativeButton>
+												<NativeButton
 													type="submit"
 													disabled={createInvestmentMutation.isPending}
 												>
 													{createInvestmentMutation.isPending
 														? "Creating..."
 														: "Invest"}
-												</Button>
+												</NativeButton>
 											</div>
 										</form>
 									</DialogContent>
@@ -541,7 +541,7 @@ export default function AdminTransactionsPage() {
 														</span>
 													</p>
 													{investment.status === "DEPOSITED" && (
-														<Button
+														<NativeButton
 															variant="outline"
 															size="sm"
 															className={cn("mt-2")}
@@ -561,7 +561,7 @@ export default function AdminTransactionsPage() {
 															{withdrawInvestmentMutation.isPending
 																? "Processing..."
 																: "Withdraw"}
-														</Button>
+														</NativeButton>
 													)}
 												</CardFooter>
 											</Card>

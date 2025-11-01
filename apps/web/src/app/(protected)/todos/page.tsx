@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { NativeButton } from "@/components/ui/native-button";
 import {
 	Card,
 	CardContent,
@@ -75,7 +75,7 @@ export default function TodosPage() {
 							placeholder="Add a new task..."
 							disabled={createMutation.isPending}
 						/>
-						<Button
+						<NativeButton
 							type="submit"
 							disabled={createMutation.isPending || !newTodoText.trim()}
 						>
@@ -84,7 +84,7 @@ export default function TodosPage() {
 							) : (
 								"Add"
 							)}
-						</Button>
+						</NativeButton>
 					</form>
 
 					{todos.isLoading ? (
@@ -115,14 +115,14 @@ export default function TodosPage() {
 											{todo.text}
 										</label>
 									</div>
-									<Button
+									<NativeButton
 										variant="ghost"
 										size="icon"
 										onClick={() => handleDeleteTodo(todo.id)}
 										aria-label="Delete todo"
 									>
 										<Trash2 className="h-4 w-4" />
-									</Button>
+									</NativeButton>
 								</li>
 							))}
 						</ul>

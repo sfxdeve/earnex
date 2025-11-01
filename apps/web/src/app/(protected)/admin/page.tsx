@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { NativeButton } from "@/components/ui/native-button";
 import {
 	Card,
 	CardAction,
@@ -193,13 +193,13 @@ export default function AdminPage() {
 						}}
 					>
 						<DialogTrigger asChild>
-							<Button
+							<NativeButton
 								variant="outline"
 								size="lg"
 								className={cn("w-full sm:w-auto")}
 							>
 								Create
-							</Button>
+							</NativeButton>
 						</DialogTrigger>
 						<DialogContent className="sm:max-w-md">
 							<DialogHeader>
@@ -310,7 +310,7 @@ export default function AdminPage() {
 								<userForm.Subscribe>
 									{(state) => (
 										<div className="flex justify-end gap-2 pt-4">
-											<Button
+											<NativeButton
 												type="button"
 												variant="outline"
 												onClick={() => {
@@ -322,8 +322,8 @@ export default function AdminPage() {
 												}
 											>
 												Cancel
-											</Button>
-											<Button
+											</NativeButton>
+											<NativeButton
 												type="submit"
 												disabled={
 													!state.canSubmit ||
@@ -334,7 +334,7 @@ export default function AdminPage() {
 												{state.isSubmitting || createUserMutation.isPending
 													? "Creating..."
 													: "Create"}
-											</Button>
+											</NativeButton>
 										</div>
 									)}
 								</userForm.Subscribe>
@@ -415,9 +415,9 @@ export default function AdminPage() {
 													}}
 												>
 													<DialogTrigger asChild>
-														<Button variant="outline" size="sm">
+														<NativeButton variant="outline" size="sm">
 															Create Account
-														</Button>
+														</NativeButton>
 													</DialogTrigger>
 													<DialogContent>
 														<DialogHeader>
@@ -488,7 +488,7 @@ export default function AdminPage() {
 															<accountForm.Subscribe>
 																{(state) => (
 																	<div className="flex justify-end gap-2 pt-4">
-																		<Button
+																		<NativeButton
 																			type="button"
 																			variant="outline"
 																			onClick={() =>
@@ -500,8 +500,8 @@ export default function AdminPage() {
 																			}
 																		>
 																			Cancel
-																		</Button>
-																		<Button
+																		</NativeButton>
+																		<NativeButton
 																			type="submit"
 																			disabled={
 																				!state.canSubmit ||
@@ -513,7 +513,7 @@ export default function AdminPage() {
 																			createAccountMutation.isPending
 																				? "Creating..."
 																				: "Create"}
-																		</Button>
+																		</NativeButton>
 																	</div>
 																)}
 															</accountForm.Subscribe>
