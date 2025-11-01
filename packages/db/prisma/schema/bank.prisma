@@ -1,0 +1,64 @@
+enum TransactionStatus {
+    PENDING
+    COMPLETED
+    FAILED
+}
+
+enum TransactionType {
+    DEPOSIT
+    WITHDRAWAL
+}
+
+model FinAccount {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    name      String
+    type      String
+    balance   Float    @default(0)
+    total     Float    @default(0)
+    currency  String   @default("USD")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    transactions Transaction[]
+    investments  Investment[]
+
+    @@map("bank_account")
+}
+
+model Transaction {
+    id          String            @id @default(auto()) @map("_id") @db.ObjectId
+    amount      Float
+    currency    String            @default("USD")
+    description String?
+    status      TransactionStatus @default(PENDING)
+    type        TransactionType
+    createdAt   DateTime          @default(now())
+    updatedAt   DateTime          @updatedAt
+
+    finAccountId String     @db.ObjectId
+    finAccount   FinAccount @relation(fields: [finAccountId], references: [id])
+
+    @@map("transaction")
+}
+
+enum InvestmentStatus {
+    DEPOSITED
+    WITHDRAWN
+}
+
+model Investment {
+    id        String           @id @default(auto()) @map("_id") @db.ObjectId
+    name      String
+    amount    Float
+    status    InvestmentStatus @default(DEPOSITED)
+    createdAt DateTime         @default(now())
+    updatedAt DateTime         @updatedAt
+
+    finAccountId String     @db.ObjectId
+    finAccount   FinAccount @relation(fields: [finAccountId], references: [id])
+
+    @@map("investment")
+}
