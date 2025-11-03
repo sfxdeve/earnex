@@ -287,6 +287,39 @@ export function SignUpForm() {
 			</div>
 
 			<div>
+				<form.Field name="dob">
+					{(field) => (
+						<div className="space-y-1.5">
+							<Label
+								htmlFor={field.name}
+								className={cn("text-base text-white lg:text-lg")}
+							>
+								Date of Birth
+							</Label>
+							<DatePicker
+								date={field.state.value}
+								onDateChange={(date) => {
+									field.handleChange(date);
+									if (date) {
+										field.handleBlur();
+									}
+								}}
+								placeholder="Select your date of birth"
+								className={cn(
+									"rounded-none border-0 border-b px-2 py-6 text-base focus-visible:ring-0",
+								)}
+							/>
+							{field.state.meta.errors.map((error, index) => (
+								<p key={index} className="text-red-500">
+									{error?.message || String(error)}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+			</div>
+
+			<div>
 				<form.Field name="country">
 					{(field) => (
 						<div className="space-y-1.5">
@@ -383,39 +416,6 @@ export function SignUpForm() {
 									onChange={(e) => field.handleChange(e.target.value)}
 								/>
 							</div>
-							{field.state.meta.errors.map((error, index) => (
-								<p key={index} className="text-red-500">
-									{error?.message || String(error)}
-								</p>
-							))}
-						</div>
-					)}
-				</form.Field>
-			</div>
-
-			<div>
-				<form.Field name="dob">
-					{(field) => (
-						<div className="space-y-1.5">
-							<Label
-								htmlFor={field.name}
-								className={cn("text-base text-white lg:text-lg")}
-							>
-								Date of Birth
-							</Label>
-							<DatePicker
-								date={field.state.value}
-								onDateChange={(date) => {
-									field.handleChange(date);
-									if (date) {
-										field.handleBlur();
-									}
-								}}
-								placeholder="Select your date of birth"
-								className={cn(
-									"rounded-none border-0 border-b px-2 py-6 text-base focus-visible:ring-0",
-								)}
-							/>
 							{field.state.meta.errors.map((error, index) => (
 								<p key={index} className="text-red-500">
 									{error?.message || String(error)}
