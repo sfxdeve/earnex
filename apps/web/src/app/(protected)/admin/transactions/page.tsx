@@ -19,7 +19,7 @@ import { NativeButton } from "@/components/ui/native-button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth-client";
-import { cn, formatAmount } from "@/lib/utils";
+import { cn, formatAmount, formatPercentage } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 
 export default function AdminTransactionsPage() {
@@ -179,26 +179,59 @@ export default function AdminTransactionsPage() {
 								<h4 className={cn("mb-2 font-semibold")}>
 									{selectedAccount.name}
 								</h4>
-								<div className={cn("grid grid-cols-2 gap-4 text-sm")}>
-									<div>
-										<span className={cn("text-gray-400")}>Balance:</span>
-										<span className={cn("ml-2 font-semibold")}>
-											${formatAmount(selectedAccount.balance)}
-										</span>
-									</div>
-									<div>
-										<span className={cn("text-gray-400")}>Total:</span>
-										<span className={cn("ml-2 font-semibold")}>
-											${formatAmount(selectedAccount.total)}
-										</span>
-									</div>
-									<div className={cn("col-span-2")}>
-										<span className={cn("text-gray-400")}>Type:</span>
-										<span className={cn("ml-2 font-semibold")}>
-											{selectedAccount.type || "N/A"}
-										</span>
-									</div>
-								</div>
+								{(() => {
+									const totalInvested =
+										investments
+											.filter((inv) => inv.status === "DEPOSITED")
+											.reduce((sum, inv) => sum + inv.amount, 0) || 0;
+									const totalPortfolio =
+										selectedAccount.balance + totalInvested;
+									const investedPercentage =
+										totalPortfolio > 0 ? totalInvested / totalPortfolio : 0;
+									const availablePercentage =
+										totalPortfolio > 0
+											? selectedAccount.balance / totalPortfolio
+											: 0;
+
+									return (
+										<div className={cn("grid grid-cols-2 gap-4 text-sm")}>
+											<div>
+												<span className={cn("text-gray-400")}>Type:</span>
+												<span className={cn("ml-2 font-semibold")}>
+													{selectedAccount.type || "N/A"}
+												</span>
+											</div>
+											<div>
+												<span className={cn("text-gray-400")}>Invested:</span>
+												<span className={cn("ml-2 font-semibold")}>
+													${formatAmount(totalInvested)}
+												</span>
+												{totalPortfolio > 0 && (
+													<span className={cn("ml-2 text-muted-foreground")}>
+														({formatPercentage(investedPercentage)})
+													</span>
+												)}
+											</div>
+											<div>
+												<span className={cn("text-gray-400")}>Total:</span>
+												<span className={cn("ml-2 font-semibold")}>
+													${formatAmount(selectedAccount.total)}
+												</span>
+											</div>
+											<div>
+												<span className={cn("text-gray-400")}>Balance:</span>
+												<span className={cn("ml-2 font-semibold")}>
+													${formatAmount(selectedAccount.balance)}
+												</span>
+												{totalPortfolio > 0 && (
+													<span className={cn("ml-2 text-muted-foreground")}>
+														({formatPercentage(availablePercentage)})
+													</span>
+												)}
+											</div>
+										</div>
+									);
+								})()}
 							</div>
 
 							{/* Account Actions */}
@@ -509,64 +542,96 @@ export default function AdminTransactionsPage() {
 											"grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3",
 										)}
 									>
-										{investments.map((investment) => (
-											<Card
-												key={investment.id}
-												className={cn("gap-4 border-primary bg-transparent")}
-											>
-												<CardHeader>
-													<CardTitle className={cn("text-lg")}>
-														{investment.name}
-													</CardTitle>
-												</CardHeader>
-												<Separator />
-												<CardFooter
-													className={cn("flex-col items-stretch gap-2 text-xs")}
+										{investments.map((investment) => {
+											const totalInvested =
+												investments
+													.filter((inv) => inv.status === "DEPOSITED")
+													.reduce((sum, inv) => sum + inv.amount, 0) || 0;
+											const totalPortfolio =
+												(selectedAccount?.balance || 0) + totalInvested;
+											const investmentPercentage =
+												totalPortfolio > 0
+													? investment.amount / totalPortfolio
+													: 0;
+
+											return (
+												<Card
+													key={investment.id}
+													className={cn("gap-4 border-primary bg-transparent")}
 												>
-													<p className={cn("space-x-2")}>
-														<span className={cn("text-gray-400")}>Amount</span>
-														<span className={cn("font-semibold")}>
-															${formatAmount(investment.amount)}
-														</span>
-													</p>
-													<p className={cn("space-x-2")}>
-														<span className={cn("text-gray-400")}>Status</span>
-														<span className={cn("uppercase")}>
-															{investment.status}
-														</span>
-													</p>
-													<p className={cn("space-x-2")}>
-														<span className={cn("text-gray-400")}>Date</span>
-														<span>
-															{new Date(investment.createdAt).toLocaleString()}
-														</span>
-													</p>
-													{investment.status === "DEPOSITED" && (
-														<NativeButton
-															variant="outline"
-															size="sm"
-															className={cn("mt-2")}
-															onClick={() => {
-																if (
-																	confirm(
-																		`Are you sure you want to withdraw ${investment.name}?`,
-																	)
-																) {
-																	withdrawInvestmentMutation.mutate({
-																		investmentId: investment.id,
-																	});
-																}
-															}}
-															disabled={withdrawInvestmentMutation.isPending}
-														>
-															{withdrawInvestmentMutation.isPending
-																? "Processing..."
-																: "Withdraw"}
-														</NativeButton>
-													)}
-												</CardFooter>
-											</Card>
-										))}
+													<CardHeader>
+														<CardTitle className={cn("text-lg")}>
+															{investment.name}
+														</CardTitle>
+													</CardHeader>
+													<Separator />
+													<CardFooter
+														className={cn(
+															"flex-col items-stretch gap-2 text-xs",
+														)}
+													>
+														<p className={cn("space-x-2")}>
+															<span className={cn("text-gray-400")}>
+																Amount
+															</span>
+															<span className={cn("font-semibold")}>
+																${formatAmount(investment.amount)}
+															</span>
+														</p>
+														{totalPortfolio > 0 &&
+															investment.status === "DEPOSITED" && (
+																<p className={cn("space-x-2")}>
+																	<span className={cn("text-gray-400")}>
+																		Portfolio Share
+																	</span>
+																	<span className={cn("font-semibold")}>
+																		{formatPercentage(investmentPercentage)}
+																	</span>
+																</p>
+															)}
+														<p className={cn("space-x-2")}>
+															<span className={cn("text-gray-400")}>
+																Status
+															</span>
+															<span className={cn("uppercase")}>
+																{investment.status}
+															</span>
+														</p>
+														<p className={cn("space-x-2")}>
+															<span className={cn("text-gray-400")}>Date</span>
+															<span>
+																{new Date(
+																	investment.createdAt,
+																).toLocaleString()}
+															</span>
+														</p>
+														{investment.status === "DEPOSITED" && (
+															<NativeButton
+																variant="outline"
+																size="sm"
+																className={cn("mt-2")}
+																onClick={() => {
+																	if (
+																		confirm(
+																			`Are you sure you want to withdraw ${investment.name}?`,
+																		)
+																	) {
+																		withdrawInvestmentMutation.mutate({
+																			investmentId: investment.id,
+																		});
+																	}
+																}}
+																disabled={withdrawInvestmentMutation.isPending}
+															>
+																{withdrawInvestmentMutation.isPending
+																	? "Processing..."
+																	: "Withdraw"}
+															</NativeButton>
+														)}
+													</CardFooter>
+												</Card>
+											);
+										})}
 									</div>
 								)}
 							</TabsContent>

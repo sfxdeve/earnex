@@ -33,7 +33,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
-import { cn, formatAmount } from "@/lib/utils";
+import { cn, formatAmount, formatPercentage } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 
 export default function DashboardPage() {
@@ -252,31 +252,58 @@ export default function DashboardPage() {
 								const selectedAccount = bankData?.accounts.find(
 									(account) => account.id === selectedAccountId,
 								);
+								if (!selectedAccount) return null;
+
+								// Calculate investment percentages
+								const totalInvested =
+									investmentsData?.investments
+										.filter((inv) => inv.status === "DEPOSITED")
+										.reduce((sum, inv) => sum + inv.amount, 0) || 0;
+								const totalPortfolio = selectedAccount.balance + totalInvested;
+								const investedPercentage =
+									totalPortfolio > 0 ? totalInvested / totalPortfolio : 0;
+								const availablePercentage =
+									totalPortfolio > 0
+										? selectedAccount.balance / totalPortfolio
+										: 0;
+
 								return (
-									selectedAccount && (
-										<>
-											<ul
+									<>
+										<ul
+											className={cn(
+												"flex flex-wrap items-center gap-4 text-primary text-xs sm:gap-6",
+											)}
+										>
+											<li>Real</li>
+											<li>MT5</li>
+											<li>Standard</li>
+											<li>#4914786</li>
+										</ul>
+										<p>
+											<span
 												className={cn(
-													"flex flex-wrap items-center gap-4 text-primary text-xs sm:gap-6",
+													"font-bold text-3xl sm:text-4xl lg:text-5xl",
 												)}
 											>
-												<li>Real</li>
-												<li>MT5</li>
-												<li>Standard</li>
-												<li>#4914786</li>
-											</ul>
-											<p>
-												<span
-													className={cn(
-														"font-bold text-3xl sm:text-4xl lg:text-5xl",
-													)}
-												>
-													{formatAmount(selectedAccount.balance)}
+												{formatAmount(selectedAccount.balance)}
+											</span>
+											<span className={cn("text-lg sm:text-xl")}> USD</span>
+										</p>
+										{totalPortfolio > 0 && (
+											<div
+												className={cn(
+													"mt-2 flex flex-wrap items-center gap-4 text-muted-foreground text-xs sm:gap-6",
+												)}
+											>
+												<span>
+													Available: {formatPercentage(availablePercentage)}
 												</span>
-												<span className={cn("text-lg sm:text-xl")}> USD</span>
-											</p>
-										</>
-									)
+												<span>
+													Invested: {formatPercentage(investedPercentage)}
+												</span>
+											</div>
+										)}
+									</>
 								);
 							})()}
 					</div>
@@ -403,41 +430,66 @@ export default function DashboardPage() {
 									"grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3",
 								)}
 							>
-								{investmentsData?.investments.map((investment) => (
-									<Card
-										key={investment.id}
-										className={cn("gap-4 border-primary bg-transparent")}
-									>
-										<CardHeader>
-											<CardTitle className={cn("text-lg")}>
-												{investment.name}
-											</CardTitle>
-										</CardHeader>
-										<Separator />
-										<CardFooter
-											className={cn("flex-col items-stretch gap-2 text-xs")}
+								{investmentsData?.investments.map((investment) => {
+									const selectedAccount = bankData?.accounts.find(
+										(account) => account.id === selectedAccountId,
+									);
+									const totalInvested =
+										investmentsData?.investments
+											.filter((inv) => inv.status === "DEPOSITED")
+											.reduce((sum, inv) => sum + inv.amount, 0) || 0;
+									const totalPortfolio =
+										(selectedAccount?.balance || 0) + totalInvested;
+									const investmentPercentage =
+										totalPortfolio > 0 ? investment.amount / totalPortfolio : 0;
+
+									return (
+										<Card
+											key={investment.id}
+											className={cn("gap-4 border-primary bg-transparent")}
 										>
-											<p className={cn("space-x-2")}>
-												<span className={cn("text-gray-400")}>Amount</span>
-												<span className={cn("font-semibold")}>
-													${formatAmount(investment.amount)}
-												</span>
-											</p>
-											<p className={cn("space-x-2")}>
-												<span className={cn("text-gray-400")}>Status</span>
-												<span className={cn("uppercase")}>
-													{investment.status}
-												</span>
-											</p>
-											<p className={cn("space-x-2")}>
-												<span className={cn("text-gray-400")}>Date</span>
-												<span>
-													{new Date(investment.createdAt).toLocaleString()}
-												</span>
-											</p>
-										</CardFooter>
-									</Card>
-								))}
+											<CardHeader>
+												<CardTitle className={cn("text-lg")}>
+													{investment.name}
+												</CardTitle>
+											</CardHeader>
+											<Separator />
+											<CardFooter
+												className={cn("flex-col items-stretch gap-2 text-xs")}
+											>
+												<p className={cn("space-x-2")}>
+													<span className={cn("text-gray-400")}>Amount</span>
+													<span className={cn("font-semibold")}>
+														${formatAmount(investment.amount)}
+													</span>
+												</p>
+												{totalPortfolio > 0 &&
+													investment.status === "DEPOSITED" && (
+														<p className={cn("space-x-2")}>
+															<span className={cn("text-gray-400")}>
+																Portfolio Share
+															</span>
+															<span className={cn("font-semibold")}>
+																{formatPercentage(investmentPercentage)}
+															</span>
+														</p>
+													)}
+												<p className={cn("space-x-2")}>
+													<span className={cn("text-gray-400")}>Status</span>
+													<span className={cn("uppercase")}>
+														{investment.status}
+													</span>
+												</p>
+												<p className={cn("space-x-2")}>
+													<span className={cn("text-gray-400")}>Date</span>
+													<span>
+														{new Date(investment.createdAt).toLocaleString()}
+													</span>
+												</p>
+											</CardFooter>
+										</Card>
+									);
+								})}
 							</div>
 						)}
 					</TabsContent>
