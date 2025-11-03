@@ -3,7 +3,8 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -54,8 +55,12 @@ async function fetchCountries(): Promise<CountryData[]> {
 
 export function SignUpForm() {
 	const [countryCode, setCountryCode] = useState<string>("");
+	const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+	const recaptchaRef = useRef<ReCAPTCHA>(null);
 
 	const { isPending } = authClient.useSession();
+
+	const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
 
 	const { data: countries = [], isLoading: isLoadingCountries } = useQuery({
 		queryKey: ["countries"],
@@ -86,6 +91,12 @@ export function SignUpForm() {
 			acceptTerms: false,
 		},
 		onSubmit: async ({ value }) => {
+			if (!captchaToken && RECAPTCHA_SITE_KEY) {
+				toast.error("Please complete the CAPTCHA verification");
+
+				return;
+			}
+
 			const { data } = await authClient.signUp.email(
 				{
 					name: value.name,
@@ -117,6 +128,12 @@ export function SignUpForm() {
 					phone: fullPhoneNumber,
 					userId: userId,
 				});
+
+				// Reset CAPTCHA after successful submission
+				if (recaptchaRef.current) {
+					recaptchaRef.current.reset();
+					setCaptchaToken(null);
+				}
 			}
 		},
 		validators: {
@@ -350,6 +367,25 @@ export function SignUpForm() {
 					)}
 				</form.Field>
 			</div>
+
+			{RECAPTCHA_SITE_KEY && (
+				<div className="space-y-1.5">
+					<ReCAPTCHA
+						ref={recaptchaRef}
+						sitekey={RECAPTCHA_SITE_KEY}
+						onChange={(token) => {
+							setCaptchaToken(token);
+						}}
+						onExpired={() => {
+							setCaptchaToken(null);
+						}}
+						onError={() => {
+							setCaptchaToken(null);
+							toast.error("CAPTCHA error. Please try again.");
+						}}
+					/>
+				</div>
+			)}
 
 			<div>
 				<form.Field name="acceptTerms">
