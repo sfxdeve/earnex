@@ -1,7 +1,9 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,18 +11,63 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import { NativeButton } from "@/components/ui/native-button";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
 import { content } from "./content";
 
+type CountryData = {
+	name: string;
+	code: string;
+};
+
+async function fetchCountries(): Promise<CountryData[]> {
+	const { data } = await axios.get<
+		Array<{
+			name: { common: string };
+			idd: { root: string; suffixes?: string[] };
+		}>
+	>("https://restcountries.com/v3.1/all?fields=name,idd");
+
+	return data
+		.filter((country) => country.idd?.root)
+		.map((country) => {
+			const code =
+				country.idd.suffixes && country.idd.suffixes.length > 0
+					? country.idd.root + country.idd.suffixes[0]
+					: country.idd.root;
+			return {
+				name: country.name.common,
+				code,
+			};
+		})
+		.sort((a, b) => a.name.localeCompare(b.name));
+}
+
 export function SignUpForm() {
+	const [countryCode, setCountryCode] = useState<string>("");
+
 	const { isPending } = authClient.useSession();
+
+	const { data: countries = [], isLoading: isLoadingCountries } = useQuery({
+		queryKey: ["countries"],
+		queryFn: fetchCountries,
+		staleTime: Number.POSITIVE_INFINITY,
+	});
 
 	const createInfpMutation = useMutation(
 		orpc.auth.createInfo.mutationOptions({
 			onSuccess: () => {
+				setCountryCode("");
+
 				form.reset();
 			},
 			onError: (error: Error) => {
@@ -61,9 +108,13 @@ export function SignUpForm() {
 			if (data) {
 				const userId = data.user.id;
 
+				const fullPhoneNumber = countryCode
+					? `${countryCode}${value.phone}`
+					: value.phone;
+
 				createInfpMutation.mutate({
 					country: value.country,
-					phone: value.phone,
+					phone: fullPhoneNumber,
 					userId: userId,
 				});
 			}
@@ -119,9 +170,9 @@ export function SignUpForm() {
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
 							/>
-							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
-									{error?.message}
+							{field.state.meta.errors.map((error, index) => (
+								<p key={index} className="text-red-500">
+									{error?.message || String(error)}
 								</p>
 							))}
 						</div>
@@ -151,9 +202,9 @@ export function SignUpForm() {
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
 							/>
-							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
-									{error?.message}
+							{field.state.meta.errors.map((error, index) => (
+								<p key={index} className="text-red-500">
+									{error?.message || String(error)}
 								</p>
 							))}
 						</div>
@@ -183,41 +234,9 @@ export function SignUpForm() {
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
 							/>
-							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
-									{error?.message}
-								</p>
-							))}
-						</div>
-					)}
-				</form.Field>
-			</div>
-
-			<div>
-				<form.Field name="phone">
-					{(field) => (
-						<div className="space-y-1.5">
-							<Label
-								htmlFor={field.name}
-								className={cn("text-base text-white lg:text-lg")}
-							>
-								Phone
-							</Label>
-							<Input
-								id={field.name}
-								name={field.name}
-								type="tel"
-								placeholder="Your phone number"
-								className={cn(
-									"rounded-none border-0 border-b px-2 py-6 placeholder:text-base focus-visible:ring-0",
-								)}
-								value={field.state.value}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-							/>
-							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
-									{error?.message}
+							{field.state.meta.errors.map((error, index) => (
+								<p key={index} className="text-red-500">
+									{error?.message || String(error)}
 								</p>
 							))}
 						</div>
@@ -235,21 +254,96 @@ export function SignUpForm() {
 							>
 								Country
 							</Label>
-							<Input
-								id={field.name}
-								name={field.name}
-								type="text"
-								placeholder="Where do you live"
-								className={cn(
-									"rounded-none border-0 border-b px-2 py-6 placeholder:text-base focus-visible:ring-0",
-								)}
+							<Select
 								value={field.state.value}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-							/>
-							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
-									{error?.message}
+								onValueChange={(value) => {
+									field.handleChange(value);
+
+									const selectedCountry = countries.find(
+										(c) => c.name === value,
+									);
+
+									if (selectedCountry) {
+										setCountryCode(selectedCountry.code);
+									} else {
+										setCountryCode("");
+									}
+								}}
+								onOpenChange={(open) => {
+									if (!open) {
+										field.handleBlur();
+									}
+								}}
+								disabled={isLoadingCountries}
+							>
+								<SelectTrigger
+									id={field.name}
+									className={cn(
+										"w-full rounded-none border-0 border-b px-2 py-6 focus-visible:ring-0",
+									)}
+								>
+									<SelectValue
+										placeholder={
+											isLoadingCountries
+												? "Loading countries..."
+												: "Where do you live"
+										}
+									/>
+								</SelectTrigger>
+								<SelectContent>
+									{countries.map((country) => (
+										<SelectItem key={country.name} value={country.name}>
+											{country.name}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							{field.state.meta.errors.map((error, index) => (
+								<p key={index} className="text-red-500">
+									{error?.message || String(error)}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+			</div>
+
+			<div>
+				<form.Field name="phone">
+					{(field) => (
+						<div className="space-y-1.5">
+							<Label
+								htmlFor={field.name}
+								className={cn("text-base text-white lg:text-lg")}
+							>
+								Phone
+							</Label>
+							<div className="flex gap-2">
+								<Input
+									type="text"
+									placeholder="+1"
+									readOnly
+									className={cn(
+										"w-20 rounded-none border-0 border-b px-2 py-6 placeholder:text-base focus-visible:ring-0",
+									)}
+									value={countryCode}
+								/>
+								<Input
+									id={field.name}
+									name={field.name}
+									type="tel"
+									placeholder="Your phone number"
+									className={cn(
+										"flex-1 rounded-none border-0 border-b px-2 py-6 placeholder:text-base focus-visible:ring-0",
+									)}
+									value={field.state.value}
+									onBlur={field.handleBlur}
+									onChange={(e) => field.handleChange(e.target.value)}
+								/>
+							</div>
+							{field.state.meta.errors.map((error, index) => (
+								<p key={index} className="text-red-500">
+									{error?.message || String(error)}
 								</p>
 							))}
 						</div>
@@ -280,9 +374,9 @@ export function SignUpForm() {
 									{content.form.note}
 								</Label>
 							</div>
-							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
-									{error?.message}
+							{field.state.meta.errors.map((error, index) => (
+								<p key={index} className="text-red-500">
+									{error?.message || String(error)}
 								</p>
 							))}
 						</div>
