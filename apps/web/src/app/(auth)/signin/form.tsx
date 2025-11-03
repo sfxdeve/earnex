@@ -4,6 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
@@ -11,6 +12,7 @@ import { NativeButton } from "@/components/ui/native-button";
 import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+import { content } from "./content";
 
 export function SignInForm() {
 	const router = useRouter();
@@ -21,6 +23,7 @@ export function SignInForm() {
 		defaultValues: {
 			email: "",
 			password: "",
+			acceptTerms: false,
 		},
 		onSubmit: async ({ value }) => {
 			await authClient.signIn.email(
@@ -46,6 +49,9 @@ export function SignInForm() {
 			onSubmit: z.object({
 				email: z.email("Invalid email address"),
 				password: z.string().min(8, "Password must be at least 8 characters"),
+				acceptTerms: z.boolean().refine((val) => val === true, {
+					message: "You must agree to the Privacy Policy and Terms of Service",
+				}),
 			}),
 		},
 	});
@@ -117,6 +123,39 @@ export function SignInForm() {
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
 							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+			</div>
+
+			<div>
+				<form.Field name="acceptTerms">
+					{(field) => (
+						<div className="space-y-1.5">
+							<div className="flex items-start gap-3 space-y-0">
+								<Checkbox
+									id={field.name}
+									checked={field.state.value}
+									onCheckedChange={(checked) =>
+										field.handleChange(checked === true)
+									}
+									onBlur={field.handleBlur}
+									className="mt-1 rounded-sm"
+								/>
+								<Label
+									htmlFor={field.name}
+									className={cn(
+										"cursor-pointer text-sm leading-7 sm:text-base",
+									)}
+								>
+									{content.form.note}
+								</Label>
+							</div>
 							{field.state.meta.errors.map((error) => (
 								<p key={error?.message} className="text-red-500">
 									{error?.message}

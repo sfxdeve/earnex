@@ -433,7 +433,7 @@ export default function AdminTransactionsPage() {
 
 					{/* Display Transactions & Investments */}
 					{selectedAccountId && (
-						<Tabs defaultValue="transactions" className={cn("w-full")}>
+						<Tabs defaultValue="investments" className={cn("w-full")}>
 							<TabsList>
 								<TabsTrigger value="investments">Investments</TabsTrigger>
 								<TabsTrigger value="transactions">Transactions</TabsTrigger>

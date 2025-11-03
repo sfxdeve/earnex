@@ -4,6 +4,7 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
@@ -12,6 +13,7 @@ import { authClient } from "@/lib/auth-client";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/utils/orpc";
+import { content } from "./content";
 
 export function SignUpForm() {
 	const { isPending } = authClient.useSession();
@@ -34,6 +36,7 @@ export function SignUpForm() {
 			password: "",
 			phone: "",
 			country: "",
+			acceptTerms: false,
 		},
 		onSubmit: async ({ value }) => {
 			const { data } = await authClient.signUp.email(
@@ -74,6 +77,9 @@ export function SignUpForm() {
 					.string()
 					.min(10, "Phone number must be at least 10 characters"),
 				country: z.string().min(2, "Country must be at least 2 characters"),
+				acceptTerms: z.boolean().refine((val) => val === true, {
+					message: "You must agree to the Privacy Policy and Terms of Service",
+				}),
 			}),
 		},
 	});
@@ -241,6 +247,39 @@ export function SignUpForm() {
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
 							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+			</div>
+
+			<div>
+				<form.Field name="acceptTerms">
+					{(field) => (
+						<div className="space-y-1.5">
+							<div className="flex items-start gap-3 space-y-0">
+								<Checkbox
+									id={field.name}
+									checked={field.state.value}
+									onCheckedChange={(checked) =>
+										field.handleChange(checked === true)
+									}
+									onBlur={field.handleBlur}
+									className="mt-1 rounded-sm"
+								/>
+								<Label
+									htmlFor={field.name}
+									className={cn(
+										"cursor-pointer text-sm leading-7 sm:text-base",
+									)}
+								>
+									{content.form.note}
+								</Label>
+							</div>
 							{field.state.meta.errors.map((error) => (
 								<p key={error?.message} className="text-red-500">
 									{error?.message}
