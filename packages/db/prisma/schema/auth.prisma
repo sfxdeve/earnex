@@ -70,7 +70,7 @@ model Verification {
 }
 
 model Info {
-  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   phone     String
   country   String
   createdAt DateTime @default(now())

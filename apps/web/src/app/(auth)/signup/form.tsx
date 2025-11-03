@@ -29,6 +29,7 @@ export function SignUpForm() {
 
 	const form = useForm({
 		defaultValues: {
+			name: "",
 			email: "",
 			password: "",
 			phone: "",
@@ -37,7 +38,7 @@ export function SignUpForm() {
 		onSubmit: async ({ value }) => {
 			const { data } = await authClient.signUp.email(
 				{
-					name: "",
+					name: value.name,
 					email: value.email,
 					password: value.password,
 					callbackURL: routes.protected.dashboard,
@@ -66,6 +67,7 @@ export function SignUpForm() {
 		},
 		validators: {
 			onSubmit: z.object({
+				name: z.string().min(2, "Name must be at least 2 characters"),
 				email: z.email("Invalid email address"),
 				password: z.string().min(8, "Password must be at least 8 characters"),
 				phone: z
@@ -87,15 +89,47 @@ export function SignUpForm() {
 				e.stopPropagation();
 				form.handleSubmit();
 			}}
-			className="space-y-6 lg:space-y-12"
+			className="space-y-4 lg:space-y-6"
 		>
+			<div>
+				<form.Field name="name">
+					{(field) => (
+						<div className="space-y-1.5">
+							<Label
+								htmlFor={field.name}
+								className={cn("text-base text-white lg:text-lg")}
+							>
+								Name
+							</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								type="text"
+								placeholder="Your full name"
+								className={cn(
+									"rounded-none border-0 border-b px-2 py-6 placeholder:text-base focus-visible:ring-0",
+								)}
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+			</div>
+
 			<div>
 				<form.Field name="email">
 					{(field) => (
-						<div className="space-y-2">
+						<div className="space-y-1.5">
 							<Label
 								htmlFor={field.name}
-								className={cn("text-lg text-white lg:text-2xl")}
+								className={cn("text-base text-white lg:text-lg")}
 							>
 								Email
 							</Label>
@@ -105,7 +139,7 @@ export function SignUpForm() {
 								type="email"
 								placeholder="Your email address"
 								className={cn(
-									"rounded-none border-0 border-b px-2 py-6 placeholder:text-lg focus-visible:ring-0",
+									"rounded-none border-0 border-b px-2 py-6 placeholder:text-base focus-visible:ring-0",
 								)}
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -124,10 +158,10 @@ export function SignUpForm() {
 			<div>
 				<form.Field name="password">
 					{(field) => (
-						<div className="space-y-2">
+						<div className="space-y-1.5">
 							<Label
 								htmlFor={field.name}
-								className={cn("text-lg text-white lg:text-2xl")}
+								className={cn("text-base text-white lg:text-lg")}
 							>
 								Password
 							</Label>
@@ -137,7 +171,39 @@ export function SignUpForm() {
 								type="password"
 								placeholder="Client portal password"
 								className={cn(
-									"rounded-none border-0 border-b px-2 py-6 placeholder:text-lg focus-visible:ring-0",
+									"rounded-none border-0 border-b px-2 py-6 placeholder:text-base focus-visible:ring-0",
+								)}
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+			</div>
+
+			<div>
+				<form.Field name="phone">
+					{(field) => (
+						<div className="space-y-1.5">
+							<Label
+								htmlFor={field.name}
+								className={cn("text-base text-white lg:text-lg")}
+							>
+								Phone
+							</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								type="tel"
+								placeholder="Your phone number"
+								className={cn(
+									"rounded-none border-0 border-b px-2 py-6 placeholder:text-base focus-visible:ring-0",
 								)}
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -156,10 +222,10 @@ export function SignUpForm() {
 			<div>
 				<form.Field name="country">
 					{(field) => (
-						<div className="space-y-2">
+						<div className="space-y-1.5">
 							<Label
 								htmlFor={field.name}
-								className={cn("text-lg text-white lg:text-2xl")}
+								className={cn("text-base text-white lg:text-lg")}
 							>
 								Country
 							</Label>
@@ -169,7 +235,7 @@ export function SignUpForm() {
 								type="text"
 								placeholder="Where do you live"
 								className={cn(
-									"rounded-none border-0 border-b px-2 py-6 placeholder:text-lg focus-visible:ring-0",
+									"rounded-none border-0 border-b px-2 py-6 placeholder:text-base focus-visible:ring-0",
 								)}
 								value={field.state.value}
 								onBlur={field.handleBlur}
@@ -180,9 +246,6 @@ export function SignUpForm() {
 									{error?.message}
 								</p>
 							))}
-							<p className="text-sm text-white/80">
-								Please ensure your country of residence is accurate
-							</p>
 						</div>
 					)}
 				</form.Field>
