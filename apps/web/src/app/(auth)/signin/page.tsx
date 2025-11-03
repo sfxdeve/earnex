@@ -85,6 +85,13 @@ export default function SignInPage() {
 
 						{/* Sign In Form */}
 						<SignInForm />
+
+						{/* Info Text */}
+						<div className={cn("space-y-4")}>
+							<p className={cn("text-sm leading-7 sm:text-base")}>
+								{content.form.note}
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>
