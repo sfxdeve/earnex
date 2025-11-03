@@ -71,6 +71,7 @@ model Verification {
 
 model Info {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  dob       DateTime
   phone     String
   country   String
   createdAt DateTime @default(now())

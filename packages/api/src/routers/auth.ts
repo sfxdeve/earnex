@@ -6,6 +6,7 @@ export const authRouter = {
 	createInfo: publicProcedure
 		.input(
 			z.object({
+				dob: z.date(),
 				phone: z.string(),
 				country: z.string(),
 				userId: z.string(),
@@ -14,6 +15,7 @@ export const authRouter = {
 		.handler(async ({ input }) => {
 			return await prisma.info.create({
 				data: {
+					dob: input.dob,
 					phone: input.phone,
 					country: input.country,
 					user: {

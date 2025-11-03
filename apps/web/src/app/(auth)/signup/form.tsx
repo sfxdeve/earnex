@@ -8,6 +8,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
@@ -88,6 +89,7 @@ export function SignUpForm() {
 			password: "",
 			phone: "",
 			country: "",
+			dob: undefined as Date | undefined,
 			acceptTerms: false,
 		},
 		onSubmit: async ({ value }) => {
@@ -123,13 +125,18 @@ export function SignUpForm() {
 					? `${countryCode}${value.phone}`
 					: value.phone;
 
+				if (!value.dob) {
+					toast.error("Please select your date of birth");
+					return;
+				}
+
 				createInfpMutation.mutate({
 					country: value.country,
 					phone: fullPhoneNumber,
+					dob: value.dob,
 					userId: userId,
 				});
 
-				// Reset CAPTCHA after successful submission
 				if (recaptchaRef.current) {
 					recaptchaRef.current.reset();
 					setCaptchaToken(null);
@@ -145,6 +152,24 @@ export function SignUpForm() {
 					.string()
 					.min(10, "Phone number must be at least 10 characters"),
 				country: z.string().min(2, "Country must be at least 2 characters"),
+				dob: z
+					.date({
+						message: "Date of birth is required",
+					})
+					.refine(
+						(date) => {
+							const today = new Date();
+							const eighteenYearsAgo = new Date(
+								today.getFullYear() - 18,
+								today.getMonth(),
+								today.getDate(),
+							);
+							return date <= eighteenYearsAgo;
+						},
+						{
+							message: "You must be at least 18 years old",
+						},
+					),
 				acceptTerms: z.boolean().refine((val) => val === true, {
 					message: "You must agree to the Privacy Policy and Terms of Service",
 				}),
@@ -358,6 +383,39 @@ export function SignUpForm() {
 									onChange={(e) => field.handleChange(e.target.value)}
 								/>
 							</div>
+							{field.state.meta.errors.map((error, index) => (
+								<p key={index} className="text-red-500">
+									{error?.message || String(error)}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+			</div>
+
+			<div>
+				<form.Field name="dob">
+					{(field) => (
+						<div className="space-y-1.5">
+							<Label
+								htmlFor={field.name}
+								className={cn("text-base text-white lg:text-lg")}
+							>
+								Date of Birth
+							</Label>
+							<DatePicker
+								date={field.state.value}
+								onDateChange={(date) => {
+									field.handleChange(date);
+									if (date) {
+										field.handleBlur();
+									}
+								}}
+								placeholder="Select your date of birth"
+								className={cn(
+									"rounded-none border-0 border-b px-2 py-6 text-base focus-visible:ring-0",
+								)}
+							/>
 							{field.state.meta.errors.map((error, index) => (
 								<p key={index} className="text-red-500">
 									{error?.message || String(error)}
