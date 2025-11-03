@@ -513,6 +513,7 @@ export default function AdminPage() {
 													}
 												}}
 												placeholder="Select date of birth"
+												captionLayout="dropdown"
 											/>
 											{field.state.meta.errors.map((error, index) => (
 												<p
@@ -824,6 +825,7 @@ export default function AdminPage() {
 												}
 											}}
 											placeholder="Select date of birth"
+											captionLayout="dropdown"
 										/>
 										{field.state.meta.errors.map((error, index) => (
 											<p

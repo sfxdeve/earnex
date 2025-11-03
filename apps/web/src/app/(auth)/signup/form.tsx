@@ -305,6 +305,7 @@ export function SignUpForm() {
 									}
 								}}
 								placeholder="Select your date of birth"
+								captionLayout="dropdown"
 								className={cn(
 									"rounded-none border-0 border-b px-2 py-6 text-base focus-visible:ring-0",
 								)}

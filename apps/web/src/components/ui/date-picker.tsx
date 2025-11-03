@@ -17,6 +17,7 @@ interface DatePickerProps {
 	placeholder?: string;
 	disabled?: boolean;
 	className?: string;
+	captionLayout?: "label" | "dropdown" | "dropdown-months" | "dropdown-years";
 }
 
 export function DatePicker({
@@ -25,6 +26,7 @@ export function DatePicker({
 	placeholder = "Pick a date",
 	disabled = false,
 	className,
+	captionLayout = "label",
 }: DatePickerProps) {
 	const [open, setOpen] = React.useState(false);
 
@@ -47,6 +49,7 @@ export function DatePicker({
 				<Calendar
 					mode="single"
 					selected={date}
+					captionLayout={captionLayout}
 					onSelect={(selectedDate) => {
 						onDateChange?.(selectedDate);
 						setOpen(false);
