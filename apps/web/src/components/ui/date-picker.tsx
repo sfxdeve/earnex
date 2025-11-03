@@ -1,7 +1,6 @@
 "use client";
 
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -41,7 +40,6 @@ export function DatePicker({
 					)}
 					disabled={disabled}
 				>
-					<CalendarIcon className="mr-2 h-4 w-4" />
 					{date ? format(date, "PPP") : <span>{placeholder}</span>}
 				</Button>
 			</PopoverTrigger>

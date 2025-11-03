@@ -433,13 +433,13 @@ export default function AdminTransactionsPage() {
 
 					{/* Display Transactions & Investments */}
 					{selectedAccountId && (
-						<Tabs defaultValue="investments" className={cn("w-full")}>
+						<Tabs defaultValue="transactions" className={cn("w-full")}>
 							<TabsList>
-								<TabsTrigger value="investments">Investments</TabsTrigger>
 								<TabsTrigger value="transactions">Transactions</TabsTrigger>
+								<TabsTrigger value="investments">Investments</TabsTrigger>
 							</TabsList>
 
-							<TabsContent value="investments" className={cn("mt-4")}>
+							<TabsContent value="transactions" className={cn("mt-4")}>
 								{transactionsLoading ? (
 									<p className={cn("text-muted-foreground text-sm")}>
 										Loading transactions...
@@ -494,7 +494,7 @@ export default function AdminTransactionsPage() {
 								)}
 							</TabsContent>
 
-							<TabsContent value="transactions" className={cn("mt-4")}>
+							<TabsContent value="investments" className={cn("mt-4")}>
 								{investmentsLoading ? (
 									<p className={cn("text-muted-foreground text-sm")}>
 										Loading investments...
