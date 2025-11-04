@@ -30,9 +30,11 @@ export default function SignUpPage() {
 					<div className={cn("flex flex-1 flex-col justify-between gap-6")}>
 						{/* Brand */}
 						<div>
-							<h1 className={cn("font-bold text-2xl lg:text-3xl")}>
-								{content.brand}
-							</h1>
+							<Image
+								src={assets.logo.src}
+								alt={assets.logo.alt}
+								className={cn("h-36 w-auto")}
+							/>
 						</div>
 
 						{/* Main Heading */}

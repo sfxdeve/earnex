@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { assets } from "@/assets";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -40,9 +41,13 @@ export function Header() {
 	return (
 		<header className={cn("relative flex items-center justify-between gap-4")}>
 			<nav className={cn("flex items-center gap-4 sm:gap-10 lg:gap-20")}>
-				<h1 className={cn("font-bold text-lg sm:text-xl lg:text-2xl")}>
-					Earnex Global
-				</h1>
+				<Link href={routes.protected.dashboard}>
+					<Image
+						src={assets.logo.src}
+						alt={assets.logo.alt}
+						className={cn("h-32 w-auto")}
+					/>
+				</Link>
 				{/* Desktop Navigation */}
 				{!isAdmin && (
 					<ul className={cn("hidden items-center gap-6 lg:flex lg:gap-10")}>

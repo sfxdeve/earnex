@@ -1,6 +1,7 @@
 import BankCardIcon from "./bank-card-icon.svg";
 import BinancePayIcon from "./binance-pay-icon.svg";
 import BitcoinBTCIcon from "./bitcoin-btc-icon.svg";
+import Logo from "./logo.png";
 import NetellerIcon from "./neteller-icon.svg";
 import Pattern from "./pattern.png";
 import PerfectMoneyIcon from "./perfect-money-icon.svg";
@@ -10,6 +11,10 @@ import TetherIcon from "./tether-icon.svg";
 import USDCoinIcon from "./usd-coin-icon.svg";
 
 export const assets = {
+	logo: {
+		src: Logo,
+		alt: "Earnex logo",
+	},
 	pattern: {
 		src: Pattern,
 		alt: "A decorative pattern background",
