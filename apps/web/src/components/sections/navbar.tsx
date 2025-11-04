@@ -11,6 +11,8 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "../ui/button";
+import { assets } from "@/assets";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
 	const routes = [
@@ -32,7 +34,11 @@ const Navbar = () => {
 		<div className="fluid-container relative">
 			<div className="absolute z-50 mt-8 flex w-full items-center justify-between px-5">
 				<Link href={"/"}>
-					<Image src={"/logo.svg"} alt="logo" width={170} height={34} />
+					<Image
+						src={assets.logo.src}
+						alt={assets.logo.alt}
+						className={cn("h-32 w-auto")}
+					/>
 				</Link>
 				<div className="hidden items-center gap-[50px] lg:flex">
 					{routes.map((res, index) => {
